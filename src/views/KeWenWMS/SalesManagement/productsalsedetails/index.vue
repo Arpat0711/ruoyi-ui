@@ -101,13 +101,13 @@
         label="物料名称"
         align="center"
         prop="itemName"
-        :show-overflow-tooltip="true"
+        width="130px"
       />
       <el-table-column
         label="物料编码"
         align="center"
         prop="itemCode"
-        :show-overflow-tooltip="true"
+        width="120px"
       />
       <el-table-column label="客户编码" align="center" prop="clientCode" />
       <el-table-column label="客户名称" align="center" prop="clientName" />
@@ -323,6 +323,8 @@
 import Vue from 'vue'
 import { getToken } from '@/utils/auth'
 import request from '@/utils/request'
+
+var serverUrl = process.env.VUE_APP_BASE_API  //获取.env.配置文件的服务器路径
 export default {
   name: "productsalesdetails",
   dicts: ['mes_order_status'],
@@ -411,10 +413,8 @@ export default {
       data.orgId = orgId
       Vue.axios({
         method: 'post',
-         url: 'http://kewen.fgimaxl2.vipnps.vip/system/loading/pcsalseId',
-        // url: 'http://192.168.20.142:8082/system/loading/pcsalseId',
-        // url: 'http://192.168.1.10:8082/system/loading/pcsalseId',
-        // url: 'http://192.168.1.204:8080/system/loading/pcsalseId',
+        url: serverUrl + 'system/loading/pcsalseId',
+
         headers: {
           'authorization': token
         },
@@ -445,10 +445,8 @@ export default {
       data.orgId = this.productSalesDetails[0].orgId
       Vue.axios({
         method: 'delete',
-         url: 'http://kewen.fgimaxl2.vipnps.vip/system/loading/unstatus',
-        // url: 'http://192.168.1.10:8082/system/loading/unstatus',
-        // url: 'http://192.168.1.204:8080/system/loading/unstatus',
-        // url: 'http://192.168.1.10:8082/system/loading/unstatus',
+        url: serverUrl + 'system/loading/unstatus',
+
         headers: {
           'authorization': token
         },

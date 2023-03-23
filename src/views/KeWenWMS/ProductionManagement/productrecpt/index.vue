@@ -66,6 +66,7 @@
               start-placeholder="开始日期"
               end-placeholder="结束日期"
               :default-time="['12:00:00', '08:00:00']"
+              value-format="yyyy-MM-dd HH:mm:ss"
             >
             </el-date-picker>
           </el-form-item>
@@ -200,7 +201,7 @@
         </template>
       </el-table-column>
 
-      <el-table-column label="备注" align="center" prop="remark" />
+      <!-- <el-table-column label="备注" align="center" prop="remark" /> -->
       <el-table-column label="创建人" align="center" prop="createBy" />
 
       <!-- <el-table-column

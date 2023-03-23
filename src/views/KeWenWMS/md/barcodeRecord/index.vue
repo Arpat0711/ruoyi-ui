@@ -531,7 +531,7 @@
       </el-table-column>
       <el-table-column label="已打印次数" align="center" prop="printNum">
       </el-table-column>
-      <el-table-column
+      <!-- <el-table-column
         label="备注"
         align="center"
         prop="remark"
@@ -565,7 +565,7 @@
         prop="update_time"
         :show-overflow-tooltip="true"
       >
-      </el-table-column>
+      </el-table-column> -->
     </el-table>
 
     <!-- 对话框 -->
@@ -964,6 +964,19 @@ export default {
     setWarehouseList (res) {
       console.log(res)
       this.barcodeData = JSON.parse(JSON.stringify(res))
+      this.barcodeData.forEach((element) => {
+        if (element.isStocked == 1) {
+          element.isStocked = "在库"
+        } else {
+          element.isStocked = "不在库"
+        }
+
+        if (element.isFreeze == 1) {
+          element.isFreeze = "占用"
+        } else {
+          element.isFreeze = "非占用"
+        }
+      })
     },
 
     /**点击条码ID查看详情 */

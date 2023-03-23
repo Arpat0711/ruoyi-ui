@@ -46,13 +46,6 @@
               @click="handleQuery"
               >搜索</el-button
             >
-            <el-button
-              icon="el-icon-check"
-              type="primary"
-              size="mini"
-              @click="examine"
-              >审核</el-button
-            >
           </el-form-item>
         </el-col>
       </el-row>
@@ -66,7 +59,7 @@
       <el-table-column type="selection" width="55" align="center" />
       <el-table-column
         label="出库单编号"
-        width="150px"
+        width="160px"
         align="center"
         prop="salseCode"
       >
@@ -112,6 +105,14 @@
           <span>{{ parseTime(scope.row.salseDate, "{y}-{m}-{d}") }}</span>
         </template>
       </el-table-column>
+      <el-table-column label="托签记录" width="80px" align="center">
+      </el-table-column>
+      <el-table-column
+        label="交期"
+        align="center"
+        prop="shippingDeadline"
+        width="100"
+      />
       <el-table-column label="单据状态" align="center" prop="status">
         <!-- <template slot-scope="scope">
           <dict-tag
@@ -120,7 +121,19 @@
           />
         </template> -->
       </el-table-column>
-      <!-- <el-table-column
+      <el-table-column
+        label="装车单图片"
+        width="100px"
+        align="center"
+        prop="attr1"
+      >
+        <template slot-scope="scope">
+          <el-button type="text" @click="showImage(scope.row)">{{
+            "图片"
+          }}</el-button>
+        </template>
+      </el-table-column>
+      <el-table-column
         label="操作"
         width="120px"
         align="center"
@@ -131,21 +144,11 @@
             size="mini"
             type="text"
             icon="el-icon-edit"
-            @click="handleUpdate(scope.row)"
-            v-hasPermi="['mes:wm:productsalse:edit']"
-            >修改</el-button
+            @click="examine(scope.row)"
+            >审核</el-button
           >
-          <el-button
-            size="mini"
-            type="text"
-            icon="el-icon-delete"
-            @click="handleDelete(scope.row)"
-            v-hasPermi="['mes:wm:productsalse:remove']"
-            >删除</el-button
-          >
-
         </template>
-      </el-table-column> -->
+      </el-table-column>
     </el-table>
 
     <pagination
@@ -429,24 +432,20 @@ export default {
     },
 
     /**审核按钮执行操作 */
-    examine () {
+    examine (row) {
+      console.log(row)
       let that = this
       let token = getToken()
       let data = []
-      let tempObj = {}
-      Object.keys(this.selectionData).forEach((index) => {
-        tempObj.orgId = this.selectionData[index].orgId
-        tempObj.salseId = this.selectionData[index].salseId
-        tempObj.status = this.selectionData[index].status
-        data.push(tempObj)
-      })
+
+      data.orgId = row.orgId
+      data.salseId = row.salseId
+      data.status = row.status
 
       Vue.axios({
         method: 'post',
         url: serverUrl + 'system/loading/status',
-        // url: 'http://192.168.20.142:8082/system/loading/status',
-        // url: 'http://192.168.1.204:8080/system/loading/status',
-        // url: 'http://192.168.1.10:8080/system/loading/status',
+
         headers: {
           'authorization': token
         },
@@ -460,6 +459,15 @@ export default {
         console.log(error)
       })
     },
+
+
+    // 查询明细按钮操作
+    handleViewDetails (row) {
+      console.log(row)
+      this.Goto(row.salseId, row.orgId)
+    },
+
+
     //获取仓库信息
     getWarehouseList () {
 
@@ -489,11 +497,7 @@ export default {
       this.selectionData = selection
       console.log(selection)
     },
-    // 查询明细按钮操作
-    handleViewDetails (row) {
-      console.log(row)
-      this.Goto(row.salseId, row.orgId)
-    },
+
     /** 新增按钮操作 */
     handleAdd () {
 
@@ -526,7 +530,15 @@ export default {
     //自动生成编码
     handleAutoGenChange (autoGenFlag) {
 
-    }
+    },
+
+    /**装车单图片跳转执行 */
+    showImage (row) {
+      console.log(row)
+      const w = window.open("about:blank")                       //可以替代window打开新页面
+      let path = row.attr1
+      w.location.href = path
+    },
   }
 };
 </script>

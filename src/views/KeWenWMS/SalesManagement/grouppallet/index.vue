@@ -318,6 +318,7 @@
             </el-form-item>
             <el-form-item label="交期" prop="deadline">
               <el-date-picker
+                value-format="yyyy-MM-dd"
                 v-model="dialogFormData.deadline"
                 type="daterange"
                 range-separator="至"
@@ -1021,14 +1022,16 @@ export default {
     // },
 
     getDialogData (custCode, soDocno, deadline, attr4) {
+      console.log(this.dialogFormData.deadline)
       console.log(attr4)
       let that = this
       let token = getToken()
       let u9SoLine = {}
-      let deadLine = deadline
+      let searchDeadLine = that.dialogFormData.deadline
       u9SoLine.orgId = "1002106210000040"
       u9SoLine.pageNum1 = that.dialogPageData.pageNum
       u9SoLine.pageSize1 = that.dialogPageData.pageSize
+      //u9SoLine.searchDeadLine = deadline
 
       u9SoLine.soDocno = soDocno
       u9SoLine.custCode = custCode
@@ -1039,7 +1042,7 @@ export default {
       Vue.axios({
         method: 'POST',
         url: serverUrl + 'u9/u9so/pagelist',
-        data: { u9SoLine, deadLine }
+        data: { u9SoLine, searchDeadLine }
       }).then(function (response) {
         console.log(response)
         if (response.data.subList != null || response.data.subList != undefined || response.data.subList != '') {
