@@ -124,7 +124,7 @@
         label="更新时间"
         align="center"
         prop="updateTime"
-        width="160"
+        width="100"
       />
       <el-table-column
         label="操作"

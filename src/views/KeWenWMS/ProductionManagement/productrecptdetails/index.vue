@@ -300,7 +300,7 @@
         </el-table-column> -->
         <el-table-column
           label="序号"
-          width="130px"
+          width="55px"
           align="center"
           prop="index"
           :show-overflow-tooltip="true"
@@ -308,10 +308,9 @@
         </el-table-column>
         <el-table-column
           label="物料名称"
-          width="130px"
+          width="150px"
           align="center"
           prop="itemName"
-          :show-overflow-tooltip="true"
         >
         </el-table-column>
         <el-table-column
@@ -356,7 +355,7 @@
           label="入库日期"
           align="center"
           prop="createTime"
-          width="140"
+          width="100"
         >
           <template slot-scope="scope">
             <span>{{ parseTime(scope.row.createTime, "{y}-{m}-{d}") }}</span>
@@ -368,17 +367,16 @@
           label="入库时间"
           align="center"
           prop="createTime"
-          width="150px"
+          width="100px"
         />
         <el-table-column label="更新人" align="center" prop="updateBy" />
         <el-table-column
           label="上架时间"
           align="center"
           prop="updateTime"
-          width="90px"
-          :show-overflow-tooltip="true"
+          width="100px"
         />
-        <el-table-column label="备注" align="center" prop="remark" />
+        <!-- <el-table-column label="备注" align="center" prop="remark" /> -->
       </el-table>
     </el-drawer>
   </div>

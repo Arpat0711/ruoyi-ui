@@ -73,11 +73,16 @@
         </template>
       </el-table-column> -->
         <el-table-column
-          label="数量"
+          label="物料总数量"
           width="90px"
           align="center"
           prop="quantity"
-          :show-overflow-tooltip="true"
+        />
+        <el-table-column
+          label="剩余数量"
+          width="90px"
+          align="center"
+          prop="attr3"
         />
         <el-table-column
           label="本次组托数量"
@@ -100,9 +105,10 @@
           </template>
         </el-table-column>
 
-        <el-table-column label="箱型" align="center" prop="boxType" />
-        <el-table-column label="合计箱数" align="center" prop="boxNum" />
+        <el-table-column label="箱容数" align="center" prop="boxQty" />
         <el-table-column label="托容数" align="center" prop="panelQty" />
+        <el-table-column label="客户标识" align="center" prop="attr1" />
+
         <!-- <el-table-column
           label="生产订单编号"
           align="center"
@@ -385,7 +391,7 @@
           :show-overflow-tooltip="true"
         />
 
-        <el-table-column
+        <!-- <el-table-column
           label="创建人"
           align="center"
           prop="createBy"
@@ -410,7 +416,7 @@
           align="center"
           prop="updateTime"
           :show-overflow-tooltip="true"
-        />
+        /> -->
       </el-table>
 
       <div slot="footer" class="dialog-footer">
@@ -467,6 +473,7 @@
             justify-content: center;
           "
           @click="download(dict.type.cust_tag)"
+          :loading="loading"
           v-hasPermi="['md:md:client:add']"
           >导出</el-button
         >
@@ -545,6 +552,7 @@
             justify-content: center;
           "
           @click="openDrawer"
+          :loading="loading"
           v-hasPermi="['md:md:client:add']"
           >查看销售订单信息</el-button
         >
@@ -625,7 +633,7 @@
         :show-overflow-tooltip="true"
       />
 
-      <el-table-column label="箱型" align="center" prop="boxType" />
+      <el-table-column label="箱型名称" align="center" prop="boxName" />
       <el-table-column label="装箱数" align="center" prop="quantityPackage" />
       <el-table-column
         label="剩余未组托箱数"
@@ -634,9 +642,9 @@
         width="110px"
       />
       <el-table-column label="托容数" align="center" prop="panelQty" />
-      <el-table-column label="托体积" align="center" prop="volume" />
-      <el-table-column label="托净重" align="center" prop="packageRough" />
-      <el-table-column label="托毛重" align="center" prop="packageNet" />
+      <el-table-column label="托体积(m³)" align="center" prop="volume" />
+      <el-table-column label="托净重(kg)" align="center" prop="packageRough" />
+      <el-table-column label="托毛重(kg)" align="center" prop="packageNet" />
       <!-- <el-table-column
         label="生产订单编号"
         align="center"
@@ -716,11 +724,7 @@
         </el-table>
       </el-form>
       <div slot="footer" class="dialog-footer">
-        <el-button
-          type="primary"
-          @click="addGroupRow"
-          :disabled="able"
-          :loading="dialogLoading"
+        <el-button type="primary" @click="addGroupRow" :disabled="able"
           >组托</el-button
         >
         <el-button @click="cancel">取 消</el-button>
@@ -843,7 +847,10 @@ export default {
       rules: {},
 
       /**dialog组托按钮开关标识 */
-      able: false
+      able: false,
+
+      /**全局保存packageID */
+      packageId: null,
     }
   },
 
@@ -899,7 +906,8 @@ export default {
             })
             that.allPanelList = JSON.parse(JSON.stringify(response.data.data.saledetails),
               that.boxList = JSON.parse(JSON.stringify(response.data.data.u9solines)),
-              that.u9solines = JSON.parse(JSON.stringify(response.data.data.u9solines))
+              that.u9solines = JSON.parse(JSON.stringify(response.data.data.u9solines)),
+              that.packageId = JSON.parse(JSON.stringify(response.data.data.packageId)),
             )
           } else {
             console.log("报错")
@@ -972,12 +980,12 @@ export default {
     getPanelVolume (quantityPackage, boxVolume, panelVolume) {
       // console.log(quantityPackage, panelWeight)
       console.log(Number(quantityPackage), Number(boxVolume), Number(panelVolume))
-      return ((Number(quantityPackage) * Number(boxVolume)) / 10000) + Number(panelVolume)
+      return ((Number(quantityPackage) * Number(boxVolume)) / 1000000000) + Number(panelVolume)
     },
 
     /**获取 本托托净重=(物料单个净重*箱子数*箱容数) */
     getPackageRough (itemWeight, quantityPackage, boxQty) {
-      //console.log(itemWeight, quantityPackage)
+      console.log(itemWeight, quantityPackage)
       return (Number(itemWeight) * Number(quantityPackage) * Number(boxQty))
     },
 
@@ -1157,8 +1165,8 @@ export default {
       let data = {}
 
       data.dataArray = that.allPanelList
-      data.packageId = that.allPanelList[0].packageId
-      data.orgId = JSON.stringify(1002106210000278)
+      data.packageId = that.packageId
+      data.orgId = that.allPanelList[0].ownerOrgId
       data.u9solines = that.u9solines
       console.log(data)
       Vue.axios({
@@ -1515,7 +1523,6 @@ export default {
         }
       }
       this.$refs.allPanel.clearSelection()
-
       this.open = false
       this.dialogLoading = false
     },
@@ -1528,7 +1535,7 @@ export default {
         let path = ''
         let query = ''
         if (item.label == this.allPanelList[0].attr1) {
-          path = "http://kewen.fgimaxl2.vipnps.vip/" + item.value
+          path = "http://192.168.20.129:8082/" + item.value
           query = "?" + "pid=" + this.allPanelList[0].packageId
           // console.log(path + query)
           w.location.href = path + query

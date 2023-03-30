@@ -94,12 +94,12 @@
         :show-overflow-tooltip="true"
       >
       </el-table-column>
-      <el-table-column
+      <!-- <el-table-column
         label="箱容数"
         width="150px"
         align="center"
         prop="boxQty"
-      />
+      /> -->
       <el-table-column label="长(mm)" align="center" prop="boxLength" />
       <el-table-column label="宽(mm)" align="center" prop="boxWidth" />
       <el-table-column label="高(mm)" align="center" prop="boxHeight" />
@@ -110,12 +110,7 @@
       <el-table-column label="托容数" align="center" prop="panelQty" />
       <el-table-column label="托体积" align="center" prop="panel" />
       <el-table-column label="托净重(kg)" align="center" prop="panelWeight" />
-      <el-table-column
-        label="备注"
-        align="center"
-        prop="remark"
-        :show-overflow-tooltip="true"
-      />
+
       <el-table-column
         label="操作"
         align="center"

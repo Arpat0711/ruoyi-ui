@@ -163,13 +163,17 @@
         :show-overflow-tooltip="true"
       />
       <el-table-column
-        label="是否启用"
+        label="统一信用社会代码"
         align="center"
         prop="creditCode"
-        width="160px"
-        :show-overflow-tooltip="true"
+        width="180px"
       />
-
+      <el-table-column
+        label="创建时间"
+        align="center"
+        prop="createTime"
+        width="100px"
+      />
       <!-- <el-table-column
         label="操作"
         align="center"
@@ -588,28 +592,8 @@ export default {
     /**客户信息表格赋值 */
     setClientList (res) {
       console.log(res)
-      let tempList = {}
       this.clientList = []
-      for (let i = 0; i < res.length; i++) {
-        tempList.clientCode = res[i].clientCode                   /**客户编码 */
-        tempList.clientName = res[i].clientName                   /**客户名称 */
-        tempList.clientNick = res[i].clientNick                   /**客户简写 */
-        tempList.clientEn = res[i].clientEn                       /**客户英文名称 */
-        tempList.clientDesc = res[i].clientDesc                   /**客户简介 */
-        tempList.clientType = res[i].clientType                   /**客户类型 */
-        tempList.address = res[i].address                         /**设置安全库存 */
-        tempList.webSite = res[i].webSite                         /**客户官网地址 */
-        tempList.email = res[i].email                             /**客户邮电 */
-        tempList.tel = res[i].tel                                 /**客户电话 */
-        tempList.contact1 = res[i].contact1                       /**联系人1 */
-        tempList.contact1Tel = res[i].contact1Tel                 /**联系人1电话 */
-        tempList.contact2 = res[i].contact2                       /**联系人2 */
-        tempList.contact2Tel = res[i].contact2Tel                 /**联系人2电话 */
-        tempList.remark = res[i].remark                           /**备注 */
-        tempList.creditCode = res[i].creditCode                   /**统一社会信用代码 */
-        this.clientList.push(tempList)
-        tempList = {}
-      }
+      this.clientList = JSON.parse(JSON.stringify(res))
     },
     // 取消按钮
     cancel () {

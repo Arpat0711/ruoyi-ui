@@ -105,8 +105,7 @@
           <span>{{ parseTime(scope.row.salseDate, "{y}-{m}-{d}") }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="托签记录" width="80px" align="center">
-      </el-table-column>
+
       <el-table-column
         label="交期"
         align="center"

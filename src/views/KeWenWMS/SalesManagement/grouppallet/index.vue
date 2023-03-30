@@ -1,3 +1,4 @@
+
 <template>
   <div class="app-container">
     <el-row
@@ -43,7 +44,7 @@
       size="small"
       :inline="true"
       v-show="showSearch"
-      label-width="85px"
+      label-width="100px"
     >
       <!-- <el-col :span="8">
           <el-form-item label="单据类型" prop="clientCode">
@@ -85,9 +86,9 @@
           </el-form-item>
         </el-col>
         <el-col :span="6">
-          <el-form-item label="销售子订单号" prop="soPono">
+          <el-form-item label="销售子订单号" prop="custPono">
             <el-input
-              v-model="mainFormData.soPono"
+              v-model="mainFormData.custPono"
               placeholder="请输入销售子订单号"
               clearable
               @keyup.enter.native="handleMainSearch"
@@ -118,7 +119,7 @@
         <el-col :span="6">
           <el-form-item label="单据状态" prop="status">
             <el-select
-              v-model="queryParams.status"
+              v-model="mainFormData.status"
               filterable
               placeholder="请选择"
               clearable
@@ -202,7 +203,24 @@
         prop="custName"
         width="190"
       />
-      <el-table-column label="交期" align="center" prop="deadLine" width="160">
+      <el-table-column
+        label="销售订单"
+        align="center"
+        prop="soDocno"
+        width="190"
+      />
+      <el-table-column
+        label="销售子订单"
+        align="center"
+        prop="custPono"
+        width="190"
+      />
+      <el-table-column
+        label="交期"
+        align="center"
+        prop="shippingDeadline"
+        width="100"
+      >
         <!-- <template slot-scope="scope">
           <dict-tag
             :options="dict.type.sys_yes_no"
@@ -214,7 +232,7 @@
         label="船期"
         align="center"
         prop="sailSchedule"
-        width="160"
+        width="100"
       />
       <el-table-column label="币种" align="center" prop="currency" />
       <el-table-column label="业务员" align="center" prop="seller" />
@@ -246,7 +264,7 @@
         label="操作"
         align="center"
         class-name="small-padding fixed-width"
-        width="150"
+        width="200"
         fixed="right"
       >
         <template slot-scope="scope">
@@ -269,28 +287,40 @@
           <el-button
             size="mini"
             type="text"
-            icon="el-icon-circle-check"
+            icon="el-icon-s-check"
             @click="handleCheck(scope.row)"
             v-hasPermi="['md:md:client:remove']"
             >审核</el-button
+          >
+          <el-button
+            size="mini"
+            type="text"
+            icon="el-icon-ship"
+            @click="updateSailSchedule(scope.row)"
+            v-hasPermi="['md:md:client:remove']"
+            >修改船期</el-button
           >
         </template>
       </el-table-column>
     </el-table>
 
-    <pagination
-      v-show="mainPageData.total > 0"
-      :total="mainPageData.total"
+    <el-pagination
+      @size-change="handleDialogSizeChange"
+      @current-change="handleMainCurrentChange"
+      background
       :page.sync="mainPageData.pageNum"
       :limit.sync="mainPageData.pageSize"
-      @pagination="getList"
-    />
+      layout="prev, pager, next,total"
+      :total="mainPageData.total"
+      :page-size="mainPageData.pageSize"
+    >
+    </el-pagination>
 
     <!-- 添加组托计划对话框 -->
     <el-dialog
       title="选择销售订单"
       :visible.sync="open"
-      width="1300px"
+      width="1400px"
       append-to-body
     >
       <el-form
@@ -407,14 +437,14 @@
           label="交期"
           width="100px"
           align="center"
-          prop="deadline"
+          prop="shippingDeadline"
           fixed
         />
         <el-table-column
           label="销售子订单号"
           width="150px"
           align="center"
-          prop="custPoNo"
+          prop="custPono"
           :show-overflow-tooltip="true"
         />
         <!-- <el-table-column
@@ -424,7 +454,7 @@
           prop="solineId"
           :show-overflow-tooltip="true"
         /> -->
-
+        <el-table-column label="客户标识" align="center" prop="attr1" />
         <el-table-column
           label="物料编码"
           width="100px"
@@ -439,13 +469,7 @@
           prop="itemName"
           :show-overflow-tooltip="true"
         />
-        <!-- <el-table-column
-          label="客户料号ID"
-          width="150px"
-          align="center"
-          prop="custItemId"
-          :show-overflow-tooltip="true"
-        /> -->
+
         <el-table-column
           label="物料总数"
           width="100px"
@@ -462,18 +486,13 @@
           <!-- <el-input size="mini"></el-input> -->
           <template slot-scope="scope">
             <el-form :model="scope.row">
-              <el-form-item
-                prop="postnum"
-                :rules="[
-                  { validator: checkDialogInput, trigger: ['blur', 'change'] },
-                ]"
-              >
+              <el-form-item prop="postnum" :error="scope.row.error">
                 <el-input
-                  :error="scope.row.error"
                   size="mini"
                   ref="inputRef"
                   v-model="scope.row.postnum"
                   @input="dialogInputChange(scope.row)"
+                  @blur="dialogInputBlur"
                 ></el-input>
               </el-form-item>
             </el-form>
@@ -516,7 +535,6 @@
           align="center"
           prop="custItemCode"
         />
-        <el-table-column label="客户标识" align="center" prop="attr1" />
         <el-table-column label="客户类型" align="center" prop="attr4" />
         <el-table-column
           label="客户品名"
@@ -548,8 +566,45 @@
       </el-pagination>
     </el-dialog>
 
-    <!-- 审核按钮弹窗-->
-    <!-- <el-dialog title="进行审核" :visible.sync="checkDialogOpen">
+    <!-- 修改船期对话框-->
+    <el-dialog title="修改船期" :visible.sync="showSailScheduleDialog">
+      <div>
+        <el-form
+          label-width="85px"
+          v-model="SailScheduleDialogFormData"
+          :inline="true"
+        >
+          <el-row>
+            <el-form-item label="组托计划号" prop="packageNo">
+              <el-input
+                v-model="SailScheduleDialogFormData.packageNo"
+                :disabled="true"
+              />
+            </el-form-item>
+          </el-row>
+          <el-row>
+            <el-form-item label="选择交期" prop="shippingDeadline">
+              <el-date-picker
+                v-model="SailScheduleDialogFormData.shippingDeadline"
+                type="datetime"
+                placeholder="选择日期时间"
+                value-format="yyyy-MM-dd HH:mm:ss"
+              >
+              </el-date-picker>
+            </el-form-item>
+
+            <el-form-item label="选择船期" prop="sailSchedule">
+              <el-date-picker
+                v-model="SailScheduleDialogFormData.sailSchedule"
+                type="datetime"
+                placeholder="选择日期时间"
+                value-format="yyyy-MM-dd HH:mm:ss"
+              >
+              </el-date-picker>
+            </el-form-item>
+          </el-row>
+        </el-form>
+      </div>
       <div slot="footer" class="dialog-footer">
         <el-button
           type="primary"
@@ -559,14 +614,14 @@
         >
         <el-button
           type="primary"
-          @click="checkDialogSubmitForm"
+          @click="SailScheduleDialogSubmitForm"
           v-else
           :disabled="able"
-          >审核</el-button
+          >确定</el-button
         >
-        <el-button @click="checkDialogCancel">取 消</el-button>
+        <el-button @click="SailScheduleDialogCancel">取 消</el-button>
       </div>
-    </el-dialog> -->
+    </el-dialog>
   </div>
 </template>
 
@@ -627,9 +682,11 @@ export default {
 
       mainFormData: {
         orgId: '',
-        packageNo: '',
-        soDocno: '',
-        custCode: '',
+        // packageNo: '',
+        // soDocno: '',
+        // custCode: '',
+        // custPono: '',
+        // status: '',
         options: [],           /**状态查询下拉框选项 */
       },
       /**组托计划主页面分页器数据 */
@@ -660,12 +717,19 @@ export default {
       dialogData: [],
       /**dialog选中行 */
       dialogSelectData: [],
-
+      /**dialog组托按钮loading */
+      dialogSubmitButtonLoading: false,
       /**审核按钮弹窗标识 */
       checkDialogOpen: false,
 
       /**dialog input 暂存 */
       tempRow: '',
+
+      /**船期修改dialog 显示标识 */
+      showSailScheduleDialog: false,
+
+      /**修改船期form数据 */
+      SailScheduleDialogFormData: {},
     }
 
   },
@@ -675,7 +739,6 @@ export default {
       console.log(res)
       this.mainFormData.options = JSON.parse(JSON.stringify(res.data))
       console.log(this.mainFormData.options)
-
     })
   },
   mounted () {
@@ -702,27 +765,45 @@ export default {
     // },
 
     /** 查询组托计划列表 */
-    getList (soDocno, packageNo, custCode) {
+    getList () {
       let that = this
       let token = getToken()
-      let data = {}
-      data.soDocno = soDocno,
-        data.packageNo = packageNo,
-        data.custCode = custCode,
-        console.log(data)
+
+      let soDocno = that.mainFormData.soDocno
+      let packageNo = that.mainFormData.packageNo
+      let custCode = that.mainFormData.custCode
+      let status = that.mainFormData.status
+      let custPono = that.mainFormData.custPono
+      let pageSize = that.mainPageData.pageSize
+      let pageNum = that.mainPageData.pageNum
+
       Vue.axios({
         method: 'post',
         url: serverUrl + 'system/pkgplan/lists',
         headers: {
           'authorization': token
         },
-        data: { data }
+        data: {
+          soDocno,
+          packageNo,
+          custCode,
+          status,
+          custPono,
+          pageSize,
+          pageNum
+        }
       }).then(function (response) {
         console.log(response)
-        that.setGroupList(response.data.rows)
+        if (response.data.code == 200) {
+          that.mainPageData.total = response.data.total
+          that.setGroupList(response.data.rows)
+        }
+
       }).catch(function (error) {
         console.log(error)
       })
+
+      that.mainPageData.pageNum = 1
     },
 
     /**赋值组托计划列表 */
@@ -742,11 +823,14 @@ export default {
 
     /**主页面搜索按钮执行 */
     handleMainSearch () {
-      this.getList(this.mainFormData.soDocno, this.mainFormData.packageNo, this.mainFormData.custCode)
+      this.getList()
     },
-    /** */
-    inputChange () {
-      console.log()
+
+    /**主页分页器选择执行 */
+    handleMainCurrentChange (val) {
+      console.log(val)
+      this.mainPageData.pageNum = val
+      this.getList()
     },
 
     /**点击组托计划号跳转函数 */
@@ -828,70 +912,70 @@ export default {
       let params = {}
       params.packageId = row.packageId
       params.orgId = '1002106210000278'
-      params.status = '审核'
+      params.status = row.status
       checkDocument(params).then(res => {
         if (res.code == 200) {
-          this.$message({
-            type: 'success',
-            message: '审核成功'
-          })
           that.getList()
         } else {
-          this.$message({
-            type: 'error',
-            message: '审核失败'
-          })
         }
       })
     },
 
-    /**审核dialog cancel按钮执行 */
-    checkDialogCancel (row) {
-      // this.checkDialogOpen = false
-
+    /**修改船期按钮执行 */
+    updateSailSchedule (row) {
+      console.log(row)
+      this.showSailScheduleDialog = true
+      this.SailScheduleDialogFormData = JSON.parse(JSON.stringify(row))
     },
 
-    /**审核dialog 审核按钮执行 */
-    checkDialogSubmitForm () {
-      // console.log("checkDialogSubmitForm")
+    /**修改船期dialog 确认按钮 */
+    SailScheduleDialogSubmitForm () {
+      let that = this
+      console.log(that.SailScheduleDialogFormData)
       let token = getToken()
-      let pageNum = 1
-      let pageSize = 10
-
+      let packageId = that.SailScheduleDialogFormData.packageId
+      let orgId = that.SailScheduleDialogFormData.orgId
+      let updateBy = that.$store.state.user.name
+      let sailSchedule = that.SailScheduleDialogFormData.sailSchedule
+      let shippingDeadline = that.SailScheduleDialogFormData.shippingDeadline
+      //console.log(data)
       Vue.axios({
-        method: 'GET',
-        url: serverUrl + 'system/user/list' + "?" + pageNum + "&" + pageSize,
+        method: 'post',
+        url: serverUrl + 'system/pkgplan/SailSchedule',
         headers: {
           'authorization': token
         },
-        data: {}
+        data: {
+          packageId,
+          orgId,
+          updateBy,
+          sailSchedule,
+          shippingDeadline
+        }
       }).then(function (response) {
         console.log(response)
+        if (response.data.code == 200) {
+          that.$message({
+            type: 'success',
+            message: '船期修改成功'
+          })
+          that.showSailScheduleDialog = false
+          that.getList()
+        } else {
+          that.$message({
+            type: 'error',
+            message: '船期修改失败：' + response.data.msg
+          })
+          that.showSailScheduleDialog = false
+        }
       }).catch(function (error) {
         console.log(error)
       })
+    },
 
-
-      // let that = this
-      // console.log(row)
-      // let params = {}
-      // params.packageId = row.packageId
-      // params.orgId = '1002106210000278'
-      // params.status = '审核'
-      // checkDocument(params).then(res => {
-      //   if (res.code == 200) {
-      //     this.$message({
-      //       type: 'success',
-      //       message: '审核成功'
-      //     })
-      //     that.getList()
-      //   } else {
-      //     this.$message({
-      //       type: 'error',
-      //       message: '审核失败'
-      //     })
-      //   }
-      // })
+    /**修改船期dialog 取消按钮 */
+    SailScheduleDialogCancel () {
+      this.showSailScheduleDialog = false
     },
 
     /**分配人员 */
@@ -1022,8 +1106,8 @@ export default {
     // },
 
     getDialogData (custCode, soDocno, deadline, attr4) {
-      console.log(this.dialogFormData.deadline)
-      console.log(attr4)
+      // console.log(this.dialogFormData.deadline)
+      // console.log(attr4)
       let that = this
       let token = getToken()
       let u9SoLine = {}
@@ -1053,7 +1137,6 @@ export default {
         }
       })
       that.dialogPageData.pageNum = 1
-
     },
 
     //**获取弹窗row-key */
@@ -1083,6 +1166,13 @@ export default {
         this.able = false
       }
 
+      this.dialogSelectData.forEach((element) => {
+        if (Number(element.postnum) == 0) {
+          console.log(element)
+          this.able = true
+        }
+      })
+
       // Object.keys(res).forEach((index) => {
       //   tempData = {}
       //   tempData = JSON.parse(JSON.stringify(res))
@@ -1099,11 +1189,48 @@ export default {
     dialogSelectionChange (row) {
       console.log(row)
       this.dialogSelectData = row
+
+      this.dialogData.forEach((item) => {
+        if (item.postnum == 0) {
+          this.dialogSelectData.forEach((selectItem) => {
+            if (item.soLineid == selectItem.soLineid) {
+              item.postnum = item.attr3
+            }
+          })
+        } else {
+
+        }
+      })
+
       if (this.dialogSelectData.length == 0) {
         this.able = true
       } else {
         this.able = false
       }
+
+      this.dialogSelectData.forEach((item) => {
+        if (item.postnum === '' || item.postnum === null || item.postnum === undefined) {               //校验输入的本次组托数量
+          this.able = true
+          item.error = '请输入正确物料数'
+        } else if (Number(item.postnum) < 0) {
+          this.able = true
+          item.error = '装箱物料数不能小于0'
+        } else if (Number(item.postnum) > Number(item.attr3)) {
+          this.able = true
+          item.error = '输入数量不能大于物料总数'
+        } else if (isNaN(item.postnum)) {
+          this.able = true
+          item.error = '请输入数字'
+        } else if (Number(item.postnum) == 0) {
+          this.able = true
+          item.error = ''
+        } else {
+          this.able = false
+          item.error = ''
+        }
+      })
+
+      //console.log(this.dialogSelectData)
     },
 
     /**选择销售订单dialog更改input进行校验 */
@@ -1115,50 +1242,71 @@ export default {
         }
       }
 
-      this.tempRow = row
+      // this.tempRow = row
 
-      // if (row.postnum === '' || row.postnum === null || row.postnum === undefined) {               //校验输入的本次组托数量
-      //   this.able = true
-      //   row.error = '请输入正确物料数'
-      // } else if (Number(row.postnum) < 0) {
-      //   this.able = true
-      //   row.error = '装箱物料数不能小于0'
-      // } else if (Number(row.postnum) > Number(row.attr3)) {
-      //   this.able = true
-      //   row.error = '输入数量不能大于物料总数'
-      // } else if (isNaN(row.postnum)) {
-      //   this.able = true
-      //   row.error = '请输入数字'
-      // } else {
-      //   this.able = false
-      //   row.error = ''
-      // }
-      // console.log(row)
+      if (row.postnum === '' || row.postnum === null || row.postnum === undefined) {               //校验输入的本次组托数量
+        this.able = true
+        row.error = '请输入正确物料数'
+      } else if (Number(row.postnum) < 0) {
+        this.able = true
+        row.error = '装箱物料数不能小于0'
+      } else if (Number(row.postnum) > Number(row.attr3)) {
+        this.able = true
+        row.error = '输入数量不能大于物料总数'
+      } else if (isNaN(row.postnum)) {
+        this.able = true
+        row.error = '请输入数字'
+      } else if (Number(row.postnum) == 0) {
+        this.able = true
+        row.error = ''
+      } else {
+        this.able = false
+        row.error = ''
+      }
+      console.log(row)
+
+      this.dialogSelectData.forEach((element) => {
+        if (Number(element.postnum) == 0) {
+          // console.log(element)
+          this.able = true
+        }
+      })
+    },
+
+    /**dialogInput失去焦点时判断隐藏报错error */
+    dialogInputBlur (row) {
+      // console.log(this.dialogData)
+      let tempRow = {}
+      this.dialogData.forEach((element) => {
+        if (element.error) {
+          element.postnum = 0
+          tempRow = element
+          this.dialogInputChange(tempRow)
+        }
+      })
+
+
     },
 
     /**dialog input校验 */
-    checkDialogInput (rule, value, callback) {
-      if (value === null || value === undefined) {               //校验dilog input 本次组托数量
-        this.able = true
-        callback(new Error('请输入正确物料数'))
-      } else if (Number(value) < 0) {
-        this.able = true
-        callback(new Error('装箱物料数不能小于0'))
-      } else if (Number(value) > Number(this.tempRow.attr3)) {
-        this.able = true
-        callback(new Error('输入数量不能大于物料总数'))
-      } else if (isNaN(this.tempRow.postnum)) {
-        this.able = true
-        callback(new Error('请输入数字'))
-      } else {
-        this.able = false
-      }
-    },
+    // checkDialogInput (rule, value, callback) {
+    //   if (value === null || value === undefined) {               //校验dilog input 本次组托数量
+    //     this.able = true
+    //     callback(new Error('请输入正确物料数'))
+    //   } else if (Number(value) < 0) {
+    //     this.able = true
+    //     callback(new Error('装箱物料数不能小于0'))
+    //   } else if (Number(value) > Number(this.tempRow.attr3)) {
+    //     this.able = true
+    //     callback(new Error('输入数量不能大于物料总数'))
+    //   } else if (isNaN(this.tempRow.postnum)) {
+    //     this.able = true
+    //     callback(new Error('请输入数字'))
+    //   } else {
+    //     this.able = false
+    //   }
+    // },
 
-    /**dialog输入框失去焦点执行 */
-    dialogInputBlur (row) {
-
-    },
 
     /**选择销售订单弹窗整数装箱按钮 */
     handleChangePlan () {
@@ -1187,10 +1335,10 @@ export default {
 .el-form-item__label {
   font-size: 10px;
 }
-.el-input {
-  width: 155px;
+/* .el-input {
+  width: 165px;
 }
 .el-input__inner::-webkit-input-placeholder {
   width: 145px;
-}
+} */
 </style>

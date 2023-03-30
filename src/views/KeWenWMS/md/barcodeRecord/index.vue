@@ -72,7 +72,7 @@
                   />
                 </el-form-item>
               </el-col>
-              <el-col :span="6">
+              <!-- <el-col :span="6">
                 <el-form-item label="条码配置ID" prop="barcodeConfigId">
                   <el-input
                     v-model="queryParams.barcodeConfigId"
@@ -82,8 +82,8 @@
                     disabled
                   />
                 </el-form-item>
-              </el-col>
-              <el-col :span="6">
+              </el-col> -->
+              <!-- <el-col :span="6">
                 <el-form-item label="条码码文" prop="barcodeContent">
                   <el-input
                     v-model="queryParams.barcodeContent"
@@ -93,8 +93,8 @@
                     disabled
                   />
                 </el-form-item>
-              </el-col>
-              <el-col :span="6">
+              </el-col> -->
+              <!-- <el-col :span="6">
                 <el-form-item label="二维码码文" prop="qrcodeContent">
                   <el-input
                     v-model="queryParams.qrcodeContent"
@@ -104,7 +104,7 @@
                     disabled
                   />
                 </el-form-item>
-              </el-col>
+              </el-col> -->
               <el-col :span="6">
                 <el-form-item label="在库状态" prop="isStocked">
                   <el-input
@@ -116,7 +116,7 @@
                   />
                 </el-form-item>
               </el-col>
-              <el-col :span="6">
+              <!-- <el-col :span="6">
                 <el-form-item label="来源单据" prop="sourceBill">
                   <el-input
                     v-model="queryParams.sourceBill"
@@ -126,7 +126,7 @@
                     disabled
                   />
                 </el-form-item>
-              </el-col>
+              </el-col> -->
               <el-col :span="6">
                 <el-form-item label="来源单号" prop="sourceId">
                   <el-input
@@ -182,7 +182,7 @@
                   />
                 </el-form-item>
               </el-col>
-              <el-col :span="6">
+              <!-- <el-col :span="6">
                 <el-form-item label="基本单位" prop="baseUnit">
                   <el-input
                     v-model="queryParams.baseUnit"
@@ -192,7 +192,7 @@
                     disabled
                   />
                 </el-form-item>
-              </el-col>
+              </el-col> -->
               <el-col :span="6">
                 <el-form-item label="条码代表数量" prop="codeEqualQty">
                   <el-input
@@ -204,7 +204,7 @@
                   />
                 </el-form-item>
               </el-col>
-              <el-col :span="6">
+              <!-- <el-col :span="6">
                 <el-form-item label="套件数" prop="suiteQty">
                   <el-input
                     v-model="queryParams.suiteQty"
@@ -214,8 +214,8 @@
                     disabled
                   />
                 </el-form-item>
-              </el-col>
-              <el-col :span="6">
+              </el-col> -->
+              <!-- <el-col :span="6">
                 <el-form-item label="套件序号" prop="suiteNo">
                   <el-input
                     v-model="queryParams.suiteNo"
@@ -225,8 +225,8 @@
                     disabled
                   />
                 </el-form-item>
-              </el-col>
-              <el-col :span="6">
+              </el-col> -->
+              <!-- <el-col :span="6">
                 <el-form-item label="包件数" prop="bagQty">
                   <el-input
                     v-model="queryParams.bagQty"
@@ -237,8 +237,8 @@
                     disabled
                   />
                 </el-form-item>
-              </el-col>
-              <el-col :span="6">
+              </el-col> -->
+              <!-- <el-col :span="6">
                 <el-form-item label="包件序号" prop="bagNo">
                   <el-input
                     v-model="queryParams.bagNo"
@@ -248,7 +248,7 @@
                     disabled
                   />
                 </el-form-item>
-              </el-col>
+              </el-col> -->
               <el-col :span="6">
                 <el-form-item label="箱件数" prop="boxQty">
                   <el-input
@@ -348,7 +348,7 @@
                   />
                 </el-form-item>
               </el-col>
-              <el-col :span="6">
+              <!-- <el-col :span="6">
                 <el-form-item label="子件名" prop="componentName">
                   <el-input
                     v-model="queryParams.componentName"
@@ -358,8 +358,8 @@
                     disabled
                   />
                 </el-form-item>
-              </el-col>
-              <el-col :span="6">
+              </el-col> -->
+              <!-- <el-col :span="6">
                 <el-form-item label="子件编码" prop="componentCode">
                   <el-input
                     v-model="queryParams.componentCode"
@@ -369,8 +369,8 @@
                     disabled
                   />
                 </el-form-item>
-              </el-col>
-              <el-col :span="6">
+              </el-col> -->
+              <!-- <el-col :span="6">
                 <el-form-item label="子件单位" prop="componentUnit">
                   <el-input
                     v-model="queryParams.componentUnit"
@@ -380,8 +380,8 @@
                     disabled
                   />
                 </el-form-item>
-              </el-col>
-              <el-col :span="6">
+              </el-col> -->
+              <!-- <el-col :span="6">
                 <el-form-item label="是否尾箱" prop="isLastCase">
                   <el-input
                     v-model="queryParams.isLastCase"
@@ -391,7 +391,7 @@
                     disabled
                   />
                 </el-form-item>
-              </el-col>
+              </el-col> -->
               <el-col :span="6">
                 <el-form-item label="已打印次数" prop="printNum">
                   <el-input
@@ -423,7 +423,7 @@
     </el-drawer>
 
     <el-form
-      :model="selectQueryParams"
+      :model="queryParams"
       ref="queryForm"
       size="mini"
       :inline="true"
@@ -433,19 +433,10 @@
     >
       <el-row>
         <el-col :span="20">
-          <el-form-item prop="boxName" label="条码格式">
+          <el-form-item prop="batchNumber" label="批次">
             <el-input
-              v-model="selectQueryParams.barcodeFormart"
-              placeholder="请输入条码格式"
-              clearable
-              style="width: 150px"
-              @keyup.enter.native="handleQuery"
-            />
-          </el-form-item>
-          <el-form-item prop="boxName" label="来源单据">
-            <el-input
-              v-model="selectQueryParams.sourceBill"
-              placeholder="请输入来源单据"
+              v-model="queryParams.batchNumber"
+              placeholder="请输入批次号"
               clearable
               style="width: 150px"
               @keyup.enter.native="handleQuery"
@@ -453,12 +444,64 @@
           </el-form-item>
           <el-form-item prop="boxCode" label="箱号">
             <el-input
-              v-model="selectQueryParams.boxCode"
-              placeholder="请输入箱号"
+              v-model="queryParams.boxCode"
+              placeholder="请输入批次号"
               clearable
               style="width: 150px"
               @keyup.enter.native="handleQuery"
             />
+          </el-form-item>
+          <el-form-item prop="attr6" label="条码类型">
+            <!--条码类型字段attr6-->
+            <el-select
+              v-model="queryParams.attr6"
+              filterable
+              placeholder="请选择"
+              clearable
+              @keyup.enter.native="handleQuery"
+            >
+              <el-option
+                v-for="item in queryParams.BarcodeTypeOptions"
+                :key="item.dictValue"
+                :label="item.dictLabel"
+                :value="item.dictValue"
+              >
+              </el-option>
+            </el-select>
+          </el-form-item>
+          <el-form-item prop="isStocked" label="在库状态">
+            <el-select
+              v-model="queryParams.isStocked"
+              filterable
+              placeholder="请选择"
+              clearable
+              @keyup.enter.native="handleQuery"
+            >
+              <el-option
+                v-for="item in queryParams.isStockedOptions"
+                :key="item.dictValue"
+                :label="item.dictLabel"
+                :value="item.dictValue"
+              >
+              </el-option>
+            </el-select>
+          </el-form-item>
+          <el-form-item prop="isFreeze" label="占用状态">
+            <el-select
+              v-model="queryParams.isFreeze"
+              filterable
+              placeholder="请选择"
+              clearable
+              @keyup.enter.native="handleQuery"
+            >
+              <el-option
+                v-for="item in queryParams.isFreezeOptions"
+                :key="item.dictValue"
+                :label="item.dictLabel"
+                :value="item.dictValue"
+              >
+              </el-option>
+            </el-select>
           </el-form-item>
         </el-col>
         <el-col :span="4" style="display: flex; justify-content: end">
@@ -490,44 +533,67 @@
           }}</el-button>
         </template>
       </el-table-column>
-      <el-table-column
-        label="条码格式"
-        align="center"
-        prop="barcodeFormart"
-        width="110"
-      >
+      <el-table-column label="条码类型" align="center" prop="attr6" width="100">
+        <template slot-scope="scope">
+          <dict-tag
+            :options="dict.type.barcode_type"
+            :value="scope.row.attr6"
+          />
+        </template>
       </el-table-column>
+
       <el-table-column
         label="在库状态"
         align="center"
         prop="isStocked"
+        width="100"
         :show-overflow-tooltip="true"
       >
+        <template slot-scope="scope">
+          <dict-tag
+            :options="dict.type.is_stocked"
+            :value="scope.row.isStocked"
+          />
+        </template>
       </el-table-column>
       <el-table-column
         label="是否占用"
         align="center"
         prop="isFreeze"
+        width="100"
         :show-overflow-tooltip="true"
       >
+        <template slot-scope="scope">
+          <dict-tag
+            :options="dict.type.is_freeze"
+            :value="scope.row.isFreeze"
+          />
+        </template>
       </el-table-column>
-      <el-table-column
+      <!-- <el-table-column
         label="来源单据"
         align="center"
         prop="sourceBill"
         :show-overflow-tooltip="true"
         width="170"
       >
-      </el-table-column>
+      </el-table-column> -->
       <el-table-column
         label="来源单号"
         align="center"
         prop="sourceId"
         :show-overflow-tooltip="true"
-        width="170"
+        width="200"
       >
       </el-table-column>
-      <el-table-column label="箱号" align="center" prop="boxCode" width="160">
+      <el-table-column
+        label="批次"
+        align="center"
+        prop="batchNumber"
+        width="200"
+      >
+      </el-table-column>
+      <el-table-column label="箱号" align="center" prop="boxCode" width="200">
       </el-table-column>
       <el-table-column label="已打印次数" align="center" prop="printNum">
       </el-table-column>
@@ -567,6 +633,17 @@
       >
       </el-table-column> -->
     </el-table>
+    <el-pagination
+      @size-change="handleMainSizeChange"
+      @current-change="handleMainCurrentChange"
+      background
+      :page.sync="mainPageData.pageNum"
+      :limit.sync="mainPageData.pageSize"
+      layout="prev, pager, next,total"
+      :total="mainPageData.total"
+      :page-size="mainPageData.pageSize"
+    >
+    </el-pagination>
 
     <!-- 对话框 -->
     <!-- <el-dialog :title="title" :visible.sync="open" width="960px" append-to-body>
@@ -838,7 +915,7 @@ import { getToken } from '@/utils/auth'
 var serverUrl = process.env.VUE_APP_BASE_API //获取.env.配置文件的服务器路径
 export default {
   name: "barcodeRule",
-  dicts: ['mes_client_type', 'sys_yes_no'],
+  dicts: ['barcode_type', 'is_stocked', 'is_freeze'],
   data () {
     return {
       /**table数据 */
@@ -867,8 +944,7 @@ export default {
       direction: 'btt',
       // 查询参数
       queryParams: {
-        barcodeFormart: '',
-        sourceBill: null,
+
       },
       // 表单参数
       form: {},
@@ -906,77 +982,85 @@ export default {
         ],
       },
       // 查询数据
-      selectQueryParams: {},
+      QueryParams: {},
+
+      /**主页面分页器数据 */
+      mainPageData: {
+        pageSize: 15,
+        pageNum: 1,
+        total: 0
+      }
     }
   },
   created () {
-    // this.getList()
+    /**从字典获取条码类型下拉框options */
+    this.getDicts("barcode_type").then((res) => {
+      console.log(res)
+      this.queryParams.BarcodeTypeOptions = JSON.parse(JSON.stringify(res.data))
+      console.log(this.queryParams.BarcodeTypeOptions)
+    })
+    /**从字典获取在库状态下拉框options */
+    this.getDicts("is_stocked").then((res) => {
+      console.log(res)
+      this.queryParams.isStockedOptions = JSON.parse(JSON.stringify(res.data))
+      console.log(this.queryParams.isStockedOptions)
+    })
+    /**从字典获取占用状态下拉框options */
+    this.getDicts("is_freeze").then((res) => {
+      console.log(res)
+      this.queryParams.isFreezeOptions = JSON.parse(JSON.stringify(res.data))
+      console.log(this.queryParams.isFreezeOptions)
+    })
   },
   mounted () {
     this.getList()
   },
   methods: {
-    /** 单据类型单选框调用函数 */
-    remoteMethod (query) {
-      if (query !== '') {
-        this.loading = true
-        setTimeout(() => {
-          this.loading = false
-          this.options = this.list.filter(item => {
-            return item.label.toLowerCase()
-              .indexOf(query.toLowerCase()) > -1
-          })
-        }, 200)
-      } else {
-        this.options = []
-      }
-    },
+
     /** 查询客户列表 */
-    getList (barcodeFormart, sourceBill, boxCode) {
+    getList () {
       let that = this
       let token = getToken()
       // console.log(token)
-      let data = {}
-      data.barcodeFormart = barcodeFormart
-      data.sourceBill = sourceBill
-      data.boxCode = boxCode
+
+      let batchNumber = that.queryParams.batchNumber
+      let attr6 = that.queryParams.attr6                   //条码类型
+      let boxCode = that.queryParams.boxCode
+      let isStocked = that.queryParams.isStocked
+      let isFreeze = that.queryParams.isFreeze
+      let pageSize = that.mainPageData.pageSize
+      let pageNum = that.mainPageData.pageNum
       Vue.axios({
         method: 'POST',
         url: serverUrl + 'system/barcode/list',
-        // url: 'http://192.168.20.142:8082/system/barcode/list',
-        // url: 'http://192.168.1.204:8080/system/barcode/list',
-        // url: 'http://192.168.1.10:8082/system/barcode/list',
-        // url: 'http://192.168.1.204:8080/system/barcode/list',
         headers: {
           'authorization': token
         },
-        data: data
+        data: {
+          batchNumber,
+          attr6,
+          boxCode,
+          pageSize,
+          pageNum,
+          isStocked,
+          isFreeze
+        }
       }).then(function (response) {
         console.log(response)
         if (response.data.code == 200) {
           that.setWarehouseList(response.data.rows)
+          that.mainPageData.total = response.data.total
         }
       }).catch(function (error) {
         console.log(error)
       })
+      that.mainPageData.pageNum = 1
     },
     /**table赋值 */
     setWarehouseList (res) {
       console.log(res)
       this.barcodeData = JSON.parse(JSON.stringify(res))
-      this.barcodeData.forEach((element) => {
-        if (element.isStocked == 1) {
-          element.isStocked = "在库"
-        } else {
-          element.isStocked = "不在库"
-        }
 
-        if (element.isFreeze == 1) {
-          element.isFreeze = "占用"
-        } else {
-          element.isFreeze = "非占用"
-        }
-      })
     },
 
     /**点击条码ID查看详情 */
@@ -1028,9 +1112,20 @@ export default {
     },
     /** 搜索按钮操作 */
     handleQuery () {
-      console.log(this.selectQueryParams.barcodeFormart, this.selectQueryParams.sourceBill)
-      this.getList(this.selectQueryParams.barcodeFormart, this.selectQueryParams.sourceBill, this.selectQueryParams.boxCode)
+      this.getList()
     },
+
+    /**主页面分页器选择操作 */
+    handleMainCurrentChange (val) {
+      // console.log(val);
+      this.mainPageData.pageNum = val
+      this.getList()
+
+    },
+
+    /**主页面分页器数据列数选择执行 */
+    handleMainSizeChange () { },
+
     /** 重置按钮操作 */
     resetQuery () {
 

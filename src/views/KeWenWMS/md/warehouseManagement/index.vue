@@ -106,30 +106,25 @@
         <template slot-scope="scope"> {{ scope.row.area }} ㎡ </template>
       </el-table-column>
       <el-table-column label="负责人" align="center" prop="charge" />
-      <el-table-column
-        label="备注"
-        align="center"
-        prop="remark"
-        :show-overflow-tooltip="true"
-      />
+      <el-table-column label="备注" align="center" prop="remark" width="150" />
       <el-table-column label="创建人" align="center" prop="createBy" />
       <el-table-column
         label="创建时间"
         align="center"
         prop="createTime"
-        width="160"
+        width="100"
       />
       <el-table-column label="更新人" align="center" prop="updateBy" />
       <el-table-column
         label="更新时间"
         align="center"
         prop="updateTime"
-        width="160"
+        width="100"
       />
       <el-table-column
         label="操作"
         align="center"
-        width="200px"
+        width="150px"
         class-name="small-padding fixed-width"
       >
         <template slot-scope="scope">

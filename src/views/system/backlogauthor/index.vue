@@ -1,6 +1,13 @@
 <template>
   <div class="app-container">
-    <el-form :model="queryParams" ref="queryForm" size="small" :inline="true" v-show="showSearch" label-width="68px">
+    <el-form
+      :model="queryParams"
+      ref="queryForm"
+      size="mini"
+      :inline="true"
+      v-show="showSearch"
+      label-width="120"
+    >
       <el-form-item label="单据中文名称" prop="ordername">
         <el-input
           v-model="queryParams.ordername"
@@ -18,7 +25,11 @@
         />
       </el-form-item>
       <el-form-item label="启用状态" prop="state">
-        <el-select v-model="queryParams.state" placeholder="请选择启用状态" clearable>
+        <el-select
+          v-model="queryParams.state"
+          placeholder="请选择启用状态"
+          clearable
+        >
           <el-option
             v-for="dict in dict.type.sys_normal_disable"
             :key="dict.value"
@@ -28,8 +39,16 @@
         </el-select>
       </el-form-item>
       <el-form-item>
-        <el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
-        <el-button icon="el-icon-refresh" size="mini" @click="resetQuery">重置</el-button>
+        <el-button
+          type="primary"
+          icon="el-icon-search"
+          size="mini"
+          @click="handleQuery"
+          >搜索</el-button
+        >
+        <el-button icon="el-icon-refresh" size="mini" @click="resetQuery"
+          >重置</el-button
+        >
       </el-form-item>
     </el-form>
 
@@ -42,7 +61,8 @@
           size="mini"
           @click="handleAdd"
           v-hasPermi="['system:backlogauthor:add']"
-        >新增</el-button>
+          >新增</el-button
+        >
       </el-col>
       <el-col :span="1.5">
         <el-button
@@ -53,7 +73,8 @@
           :disabled="single"
           @click="handleUpdate"
           v-hasPermi="['system:backlogauthor:edit']"
-        >修改</el-button>
+          >修改</el-button
+        >
       </el-col>
       <el-col :span="1.5">
         <el-button
@@ -64,7 +85,8 @@
           :disabled="multiple"
           @click="handleDelete"
           v-hasPermi="['system:backlogauthor:remove']"
-        >删除</el-button>
+          >删除</el-button
+        >
       </el-col>
       <el-col :span="1.5">
         <el-button
@@ -74,19 +96,34 @@
           size="mini"
           @click="handleExport"
           v-hasPermi="['system:backlogauthor:export']"
-        >导出</el-button>
+          >导出</el-button
+        >
       </el-col>
-      <right-toolbar :showSearch.sync="showSearch" @queryTable="getList"></right-toolbar>
+      <right-toolbar
+        :showSearch.sync="showSearch"
+        @queryTable="getList"
+      ></right-toolbar>
     </el-row>
 
-    <el-table v-loading="loading" :data="backlogauthorList" @selection-change="handleSelectionChange">
+    <el-table
+      v-loading="loading"
+      :data="backlogauthorList"
+      @selection-change="handleSelectionChange"
+    >
       <el-table-column type="selection" width="55" align="center" />
       <el-table-column label="主键" align="center" prop="id" />
       <el-table-column label="单据中文名称" align="center" prop="ordername" />
-      <el-table-column label="单据头英文实体名称" align="center" prop="ordercode" />
+      <el-table-column
+        label="单据头英文实体名称"
+        align="center"
+        prop="ordercode"
+      />
       <el-table-column label="启用状态" align="center" prop="state">
         <template slot-scope="scope">
-          <dict-tag :options="dict.type.sys_normal_disable" :value="scope.row.state"/>
+          <dict-tag
+            :options="dict.type.sys_normal_disable"
+            :value="scope.row.state"
+          />
         </template>
       </el-table-column>
       <el-table-column label="动作" align="center" prop="action" />
@@ -94,7 +131,11 @@
       <el-table-column label="档案值" align="center" prop="docvalue" />
       <el-table-column label="等级" align="center" prop="grade" />
       <el-table-column label="待办类型" align="center" prop="logtype" />
-      <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
+      <el-table-column
+        label="操作"
+        align="center"
+        class-name="small-padding fixed-width"
+      >
         <template slot-scope="scope">
           <el-button
             size="mini"
@@ -102,20 +143,22 @@
             icon="el-icon-edit"
             @click="handleUpdate(scope.row)"
             v-hasPermi="['system:backlogauthor:edit']"
-          >修改</el-button>
+            >修改</el-button
+          >
           <el-button
             size="mini"
             type="text"
             icon="el-icon-delete"
             @click="handleDelete(scope.row)"
             v-hasPermi="['system:backlogauthor:remove']"
-          >删除</el-button>
+            >删除</el-button
+          >
         </template>
       </el-table-column>
     </el-table>
-    
+
     <pagination
-      v-show="total>0"
+      v-show="total > 0"
       :total="total"
       :page.sync="queryParams.pageNum"
       :limit.sync="queryParams.pageSize"
@@ -129,7 +172,10 @@
           <el-input v-model="form.ordername" placeholder="请输入单据中文名称" />
         </el-form-item>
         <el-form-item label="单据头英文实体名称" prop="ordercode">
-          <el-input v-model="form.ordercode" placeholder="请输入单据头英文实体名称" />
+          <el-input
+            v-model="form.ordercode"
+            placeholder="请输入单据头英文实体名称"
+          />
         </el-form-item>
         <el-form-item label="启用状态" prop="state">
           <el-select v-model="form.state" placeholder="请选择启用状态">
@@ -137,7 +183,7 @@
               v-for="dict in dict.type.sys_normal_disable"
               :key="dict.value"
               :label="dict.label"
-:value="dict.value"
+              :value="dict.value"
             ></el-option>
           </el-select>
         </el-form-item>
@@ -166,12 +212,12 @@
 </template>
 
 <script>
-import { listBacklogauthor, getBacklogauthor, delBacklogauthor, addBacklogauthor, updateBacklogauthor } from "@/api/system/backlogauthor";
+import { listBacklogauthor, getBacklogauthor, delBacklogauthor, addBacklogauthor, updateBacklogauthor } from "@/api/system/backlogauthor"
 
 export default {
   name: "Backlogauthor",
   dicts: ['sys_normal_disable'],
-  data() {
+  data () {
     return {
       // 遮罩层
       loading: true,
@@ -204,28 +250,28 @@ export default {
       // 表单校验
       rules: {
       }
-    };
+    }
   },
-  created() {
-    this.getList();
+  created () {
+    this.getList()
   },
   methods: {
     /** 查询待办信息配置列表 */
-    getList() {
-      this.loading = true;
+    getList () {
+      this.loading = true
       listBacklogauthor(this.queryParams).then(response => {
-        this.backlogauthorList = response.rows;
-        this.total = response.total;
-        this.loading = false;
-      });
+        this.backlogauthorList = response.rows
+        this.total = response.total
+        this.loading = false
+      })
     },
     // 取消按钮
-    cancel() {
-      this.open = false;
-      this.reset();
+    cancel () {
+      this.open = false
+      this.reset()
     },
     // 表单重置
-    reset() {
+    reset () {
       this.form = {
         id: null,
         ordername: null,
@@ -236,73 +282,73 @@ export default {
         docvalue: null,
         grade: null,
         logtype: null
-      };
-      this.resetForm("form");
+      }
+      this.resetForm("form")
     },
     /** 搜索按钮操作 */
-    handleQuery() {
-      this.queryParams.pageNum = 1;
-      this.getList();
+    handleQuery () {
+      this.queryParams.pageNum = 1
+      this.getList()
     },
     /** 重置按钮操作 */
-    resetQuery() {
-      this.resetForm("queryForm");
-      this.handleQuery();
+    resetQuery () {
+      this.resetForm("queryForm")
+      this.handleQuery()
     },
     // 多选框选中数据
-    handleSelectionChange(selection) {
+    handleSelectionChange (selection) {
       this.ids = selection.map(item => item.id)
-      this.single = selection.length!==1
+      this.single = selection.length !== 1
       this.multiple = !selection.length
     },
     /** 新增按钮操作 */
-    handleAdd() {
-      this.reset();
-      this.open = true;
-      this.title = "添加待办信息配置";
+    handleAdd () {
+      this.reset()
+      this.open = true
+      this.title = "添加待办信息配置"
     },
     /** 修改按钮操作 */
-    handleUpdate(row) {
-      this.reset();
+    handleUpdate (row) {
+      this.reset()
       const id = row.id || this.ids
       getBacklogauthor(id).then(response => {
-        this.form = response.data;
-        this.open = true;
-        this.title = "修改待办信息配置";
-      });
+        this.form = response.data
+        this.open = true
+        this.title = "修改待办信息配置"
+      })
     },
     /** 提交按钮 */
-    submitForm() {
+    submitForm () {
       this.$refs["form"].validate(valid => {
         if (valid) {
           if (this.form.id != null) {
             updateBacklogauthor(this.form).then(response => {
-              this.$modal.msgSuccess("修改成功");
-              this.open = false;
-              this.getList();
-            });
+              this.$modal.msgSuccess("修改成功")
+              this.open = false
+              this.getList()
+            })
           } else {
             addBacklogauthor(this.form).then(response => {
-              this.$modal.msgSuccess("新增成功");
-              this.open = false;
-              this.getList();
-            });
+              this.$modal.msgSuccess("新增成功")
+              this.open = false
+              this.getList()
+            })
           }
         }
-      });
+      })
     },
     /** 删除按钮操作 */
-    handleDelete(row) {
-      const ids = row.id || this.ids;
-      this.$modal.confirm('是否确认删除待办信息配置编号为"' + ids + '"的数据项？').then(function() {
-        return delBacklogauthor(ids);
+    handleDelete (row) {
+      const ids = row.id || this.ids
+      this.$modal.confirm('是否确认删除待办信息配置编号为"' + ids + '"的数据项？').then(function () {
+        return delBacklogauthor(ids)
       }).then(() => {
-        this.getList();
-        this.$modal.msgSuccess("删除成功");
-      }).catch(() => {});
+        this.getList()
+        this.$modal.msgSuccess("删除成功")
+      }).catch(() => { })
     },
     /** 导出按钮操作 */
-    handleExport() {
+    handleExport () {
       this.download('system/backlogauthor/export', {
         ...this.queryParams
       }, `backlogauthor_${new Date().getTime()}.xlsx`)

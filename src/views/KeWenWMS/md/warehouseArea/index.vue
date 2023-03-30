@@ -79,7 +79,12 @@
     >
       <el-table-column type="selection" width="55" align="center" />
       <el-table-column label="组织ID" align="center" prop="orgId" width="160" />
-      <el-table-column label="组织名称" align="center" prop="orgName">
+      <el-table-column
+        label="组织名称"
+        align="center"
+        prop="orgName"
+        width="100"
+      >
         <template slot-scope="scope">
           <el-button
             type="text"
@@ -125,19 +130,19 @@
         label="创建时间"
         align="center"
         prop="createTime"
-        width="160"
+        width="100"
       />
       <el-table-column label="更新人" align="center" prop="updateBy" />
       <el-table-column
         label="更新时间"
         align="center"
         prop="updateTime"
-        width="160"
+        width="100"
       />
       <el-table-column
         label="操作"
         align="center"
-        width="200px"
+        width="150px"
         class-name="small-padding fixed-width"
       >
         <template slot-scope="scope">

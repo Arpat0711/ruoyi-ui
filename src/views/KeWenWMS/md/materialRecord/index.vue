@@ -113,11 +113,10 @@
           </el-table-column>
           <el-table-column
             label="物料名称"
-            width="120"
+            width="160"
             align="center"
             key="itemName"
             prop="itemName"
-            :show-overflow-tooltip="true"
           />
           <el-table-column
             label="规格型号"
@@ -228,7 +227,7 @@
           />
           <el-table-column
             label="创建时间"
-            width="160"
+            width="100"
             align="center"
             prop="createTime"
           >
