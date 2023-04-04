@@ -283,7 +283,7 @@
         label-width="120px"
       >
         <el-row>
-          <el-col :span="7">
+          <el-col :span="8">
             <el-form-item label="物料ID" prop="itemId">
               <el-input
                 v-model="dialogForm.itemId"
@@ -293,7 +293,7 @@
               />
             </el-form-item>
           </el-col>
-          <el-col :span="7">
+          <el-col :span="8">
             <el-form-item label="物料编码" prop="itemCode">
               <el-input
                 v-model="dialogForm.itemCode"
@@ -303,7 +303,7 @@
               />
             </el-form-item>
           </el-col>
-          <el-col :span="7">
+          <el-col :span="8">
             <el-form-item label="物料名称" prop="itemName">
               <el-input
                 v-model="dialogForm.itemName"

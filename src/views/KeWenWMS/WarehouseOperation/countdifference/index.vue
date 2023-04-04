@@ -9,9 +9,9 @@
     >
       <el-row>
         <el-col :span="8">
-          <el-form-item label="盘点计划号" prop="clientCode">
+          <el-form-item label="盘点计划号" prop="checkPlanDocNo">
             <el-input
-              v-model="queryParams.clientCode"
+              v-model="queryParams.checkPlanDocNo"
               placeholder="请输入盘点计划号"
               clearable
               @keyup.enter.native="handleQuery"
@@ -20,9 +20,9 @@
           </el-form-item>
         </el-col>
         <el-col :span="8">
-          <el-form-item label="差异单号" prop="clientCode">
+          <el-form-item label="差异单号" prop="docNo	">
             <el-input
-              v-model="queryParams.clientCode"
+              v-model="queryParams.docNo	"
               placeholder="请输入差异单号"
               clearable
               @keyup.enter.native="handleQuery"
@@ -31,9 +31,9 @@
           </el-form-item>
         </el-col>
         <el-col :span="8">
-          <el-form-item label="创建人" prop="clientCode">
+          <el-form-item label="创建人" prop="createName">
             <el-input
-              v-model="queryParams.clientCode"
+              v-model="queryParams.createName"
               placeholder="请输入创建人"
               clearable
               @keyup.enter.native="handleQuery"
@@ -79,13 +79,12 @@
 
     <el-table
       v-loading="loading"
-      :data="planList"
-      @selection-change="handleSelectionChange"
+      :data="differenceList"
     >
       <el-table-column type="selection" width="55" align="center" />
       <el-table-column type="index" width="50" label="序号" />
-      <el-table-column label="盘点计划号" align="center" prop="clientType" />
-      <el-table-column label="盘点主题" align="center" prop="clientType" />
+      <el-table-column label="盘点计划号" align="center" prop="checkPlanDocNo" />
+      <el-table-column label="盘点主题" align="center" prop="checkPlanDocTopic" />
       <el-table-column
         label="差异单号"
         align="center"
@@ -94,19 +93,25 @@
       >
         <template slot-scope="scope">
           <el-button size="mini" type="text" @click="Goto(scope.row)">{{
-            scope.row.id
+            scope.row.docNo
           }}</el-button>
         </template>
       </el-table-column>
       <el-table-column
         label="创建人"
         align="center"
-        prop="clientName"
+        prop="createName"
         :show-overflow-tooltip="true"
       />
-      <el-table-column label="创建时间" align="center" prop="tel" />
-      <el-table-column label="状态" align="center" prop="clientType" />
-      <el-table-column label="是否重建盘点计划" align="center" prop="clientNick" />
+      <el-table-column label="创建时间" align="center" prop="createTime" />
+      <el-table-column label="状态" align="center" prop="status">
+        <template slot-scope="scope">
+          <dict-tag
+            :options="dict.type.pandianchayi_status"
+            :value="scope.row.status"
+          />
+        </template>
+      </el-table-column>
     </el-table>
 
     <pagination
@@ -120,7 +125,7 @@
 </template>
 
 <script>
-import { getList } from "@/api/WarehouseOperation/countsheet"
+import { getList } from "@/api/WarehouseOperation/countdifference"
 
 export default {
   name: "countdifference",
@@ -133,14 +138,12 @@ export default {
       // 总条数
       total: 0,
       // 客户表格数据
-      planList: [],
+      differenceList: [],
       // 查询参数
       queryParams: {
         pageNum: 1,
         pageSize: 10
-      },
-      selection: [],
-      form: {}
+      }
     }
   },
   created () {
@@ -153,7 +156,7 @@ export default {
     getList () {
       getList(this.queryParams).then(res => {
         if(res.code == 200) {
-          this.planList = res.rows
+          this.differenceList = res.rows
           this.total = res.total
         }
       })
@@ -170,14 +173,9 @@ export default {
       }
       this.getList()
     },
-    // 多选框选中数据
-    handleSelectionChange (selection) {
-      this.selection = selection
-    },
     //点击编号跳转详情页面
     Goto (row) {
-      row.type = 'detail'
-      this.$router.push({ path: '/KeWenWMS/WarehouseOperation/countdifferencedetails', query: { row: row } })
+      this.$router.push({ path: '/KeWenWMS/WarehouseOperation/countdifferencedetails', query: { row: row.id } })
     }
   }
 };

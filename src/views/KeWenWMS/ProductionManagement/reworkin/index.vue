@@ -199,7 +199,7 @@ export default {
         url: '/system/TransferIn/find-by-condition',
         method: 'post',
         data: JSON.stringify({
-          "orgId": "1002106210000278", // TODO: should be modify
+          "orgId": "1001712062695280", // TODO: should be modify
           "docType": 'KWTO06', // TODO: 返工入库单据类型，should be hard code
           docNo,
           transInDatetime,

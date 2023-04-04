@@ -113,7 +113,7 @@ export default {
         url: '/system/MiscRcvTrans/find-line-details',
         method: 'post',
         data: JSON.stringify({
-          orgId: '1002106210000278', // TODO: should be replace
+          orgId: '1001712062695280', // TODO: should be replace
           pid: this.$route.query.id,
           itemCode,
           pageNum: number,

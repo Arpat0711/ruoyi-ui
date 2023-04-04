@@ -58,17 +58,17 @@
         <el-button type="primary" size="mini" plain @click="handleSubmit">保存</el-button>
       </div>
       <el-table v-loading="loading" :data="form.wmMiscRcvTransLineList">
-        <el-table-column label="箱码" align="center" prop="unit" />
+        <el-table-column label="箱码" align="center" prop="boxCode" />
         <el-table-column label="物料编码" align="center" prop="itemCode" :show-overflow-tooltip="true" />
         <el-table-column label="物料名称" align="center" prop="itemName" :show-overflow-tooltip="true" />
-        <el-table-column label="批次号" align="center" prop="lotinfo" :show-overflow-tooltip="true"/>
-        <el-table-column label="规格型号" align="center" prop="lotinfo" :show-overflow-tooltip="true"/>
+        <el-table-column label="批次号" align="center" prop="lotInfo" :show-overflow-tooltip="true"/>
+        <el-table-column label="规格型号" align="center" prop="specification" :show-overflow-tooltip="true"/>
         <el-table-column label="单位" align="center" prop="unit" />
         <el-table-column label="数量" align="center" prop="qty" />
-        <el-table-column label="库位信息" align="center" prop="qty" />
-        <el-table-column label="操作" width="100" v-if="disabled">
+        <el-table-column label="库位信息" align="center" prop="place" />
+        <el-table-column label="操作" width="100">
           <template slot-scope="{row,$index}">
-            <el-button @click="deleteRow($index)" style="color: #f56c6c;margin-bottom: 18px;" type="text">删除</el-button>
+            <el-button @click="deleteRow($index)" style="color: #f56c6c;" type="text">删除</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -81,116 +81,119 @@
         @pagination="getList"
       />
     </div>
-    <el-dialog title="请选择您要出库的箱" :visible.sync="dialogVisible" width="70%">
-      <el-row :gutter="20">
-        <el-col :span="8">
-          <el-input
-            placeholder="输入关键字进行过滤"
-            v-model="filterText">
-          </el-input>
-          <el-divider></el-divider>
-          <el-tree
-            class="filter-tree"
-            accordion
-            :data="treeData"
-            :props="defaultProps"
-            :filter-node-method="filterNode"
-            @node-click="handleNodeClick"
-            :highlight-current="true"
-            ref="tree">
-          </el-tree>
-        </el-col>
-        <el-col :span="16">
-          <el-form
-            :model="queryParams"
-            ref="queryForm"
-            label-width="110px"
-          >
-            <el-row>
-              <el-col :span="8" >
-                <el-form-item label="箱码" prop="docNo">
-                  <el-input
-                    v-model="queryParams.docNo"
-                    placeholder="请输入"
-                    style="width: 100%"
-                    clearable
-                    @keyup.enter.native="handleQuery"
-                  />
-                </el-form-item>
-              </el-col>
-              <el-col :span="8" >
-                <el-form-item label="物料编码" prop="itemCode">
-                  <el-input
-                    v-model="queryParams.itemCode"
-                    placeholder="请输入"
-                    style="width: 100%"
-                    clearable
-                    @keyup.enter.native="handleQuery"
-                  />
-                </el-form-item>
-              </el-col>
-              <el-col :span="8" >
-                <el-form-item label="物料名称" prop="itemName">
-                  <el-input
-                    v-model="queryParams.itemName"
-                    placeholder="请输入"
-                    style="width: 100%"
-                    clearable
-                    @keyup.enter.native="handleQuery"
-                  />
-                </el-form-item>
-              </el-col>
-              <el-col :span="8" >
-                <el-form-item label="批次号" prop="lotinfo">
-                  <el-input
-                    v-model="queryParams.lotinfo"
-                    placeholder="请输入"
-                    style="width: 100%"
-                    clearable
-                    @keyup.enter.native="handleQuery"
-                  />
-                </el-form-item>
-              </el-col>
-              <el-col :span="16" style="display: flex; justify-content: end">
-                <el-form-item>
-                  <el-button
-                    type="primary"
-                    icon="el-icon-search"
-                    size="mini"
-                    @click="handleQuery"
-                    >搜索</el-button
-                  >
-                  <el-button icon="el-icon-refresh" size="mini" @click="resetQuery"
-                    >重置</el-button
-                  >
-                </el-form-item>
-              </el-col>
-            </el-row>
-          </el-form>
-          <el-table :data="gridData" @selection-change="handleSelectionChange">
-            <el-table-column type="selection" width="55" />
-            <el-table-column type="index" width="50" label="序号" />
-            <el-table-column property="date" label="组织编码" />
-            <el-table-column property="date" label="箱码" />
-            <el-table-column property="name" label="物料编码" />
-            <el-table-column property="name" label="物料名称" />
-            <el-table-column property="name" label="规格型号" />
-            <el-table-column property="address" label="批次号" />
-            <el-table-column property="address" label="单位" />
-            <el-table-column property="date" label="数量" />
-            <el-table-column property="name" label="库位" />
-          </el-table>
-          <pagination
-            v-show="total > 0"
-            :total="total"
-            :page.sync="queryParams.pageNum"
-            :limit.sync="queryParams.pageSize"
-            @pagination="getItemList"
-          />
-        </el-col>
-      </el-row>
+    <el-dialog title="请选择您要出库的箱" :visible.sync="dialogVisible" width="85%">
+      <div class="el_dialog_div">
+        <el-row :gutter="20">
+          <el-col :span="6">
+            <el-input
+              placeholder="输入关键字进行过滤"
+              v-model="filterText">
+            </el-input>
+            <el-divider></el-divider>
+            <el-tree
+              class="filter-tree"
+              accordion
+              :data="treeData"
+              :props="defaultProps"
+              :filter-node-method="filterNode"
+              @node-click="handleNodeClick"
+              :highlight-current="true"
+              ref="tree"
+              node-key="value">
+            </el-tree>
+          </el-col>
+          <el-col :span="18">
+            <el-form
+              :model="queryParams"
+              ref="queryForm"
+              label-width="110px"
+            >
+              <el-row>
+                <el-col :span="8" >
+                  <el-form-item label="箱码" prop="docNo">
+                    <el-input
+                      v-model="queryParams.boxCode"
+                      placeholder="请输入"
+                      style="width: 100%"
+                      clearable
+                      @keyup.enter.native="handleQuery"
+                    />
+                  </el-form-item>
+                </el-col>
+                <el-col :span="8" >
+                  <el-form-item label="物料编码" prop="itemCode">
+                    <el-input
+                      v-model="queryParams.itemCode"
+                      placeholder="请输入"
+                      style="width: 100%"
+                      clearable
+                      @keyup.enter.native="handleQuery"
+                    />
+                  </el-form-item>
+                </el-col>
+                <el-col :span="8" >
+                  <el-form-item label="物料名称" prop="itemName">
+                    <el-input
+                      v-model="queryParams.itemName"
+                      placeholder="请输入"
+                      style="width: 100%"
+                      clearable
+                      @keyup.enter.native="handleQuery"
+                    />
+                  </el-form-item>
+                </el-col>
+                <el-col :span="8" >
+                  <el-form-item label="批次号" prop="lotInfo">
+                    <el-input
+                      v-model="queryParams.lotInfo"
+                      placeholder="请输入"
+                      style="width: 100%"
+                      clearable
+                      @keyup.enter.native="handleQuery"
+                    />
+                  </el-form-item>
+                </el-col>
+                <el-col :span="16" style="display: flex; justify-content: end">
+                  <el-form-item>
+                    <el-button
+                      type="primary"
+                      icon="el-icon-search"
+                      size="mini"
+                      @click="handleQuery"
+                      >搜索</el-button
+                    >
+                    <el-button icon="el-icon-refresh" size="mini" @click="resetQuery"
+                      >重置</el-button
+                    >
+                  </el-form-item>
+                </el-col>
+              </el-row>
+            </el-form>
+            <el-table :data="gridData" @selection-change="handleSelectionChange">
+              <el-table-column type="selection" width="55" />
+              <el-table-column type="index" width="50" label="序号" />
+              <el-table-column property="orgName" label="组织名称" />
+              <el-table-column property="boxCode" label="箱码" />
+              <el-table-column property="itemCode" label="物料编码" />
+              <el-table-column property="itemName" label="物料名称" />
+              <el-table-column property="specification" label="规格型号" />
+              <el-table-column property="lotInfo" label="批次号" />
+              <el-table-column property="unit" label="单位"  width="50" />
+              <el-table-column property="qty" label="数量" />
+              <el-table-column property="place" label="库位" />
+            </el-table>
+            <pagination
+              v-show="total > 0"
+              :total="total"
+              :page.sync="queryParams.pageNum"
+              :limit.sync="queryParams.pageSize"
+              @pagination="getItemList"
+            />
+          </el-col>
+        </el-row>
+      </div>
       <span slot="footer" class="dialog-footer">
-        <el-button type="primary" @click="dialogVisible = false">选 择</el-button>
+        <el-button type="primary" @click="selectAddOrder">选 择</el-button>
         <el-button @click="dialogVisible = false">取 消</el-button>
       </span>
     </el-dialog>
@@ -199,7 +202,7 @@
 
 <script>
 import { getDicts } from "@/api/system/dict/data"
-import { getDetail, miscRcvTrans, getBatch, addtInsert } from '@/api/WarehouseOperation/otherout'
+import { getDetail, miscRcvTrans, addtInsert, getItemListTable } from '@/api/WarehouseOperation/otherout'
 import { deepClone } from '@/utils/index'
 import SelectItem from '@/components/SelectItem'
 import { listThread } from '@/api/WarehouseOperation/transferin'
@@ -259,7 +262,9 @@ export default {
         pageSize: 10
       },
       total: 0,
-      selection: []
+      selection: [],
+      selectNode: '',
+      selectData: ''
     }
   },
 
@@ -285,17 +290,15 @@ export default {
         }
         getDicts('org').then(res => {
           if (res.code == 200) {
-            res.data.forEach(item => {
-              this.form.orgId = item.dictValue
-              this.form.orgName = item.dictLabel
-            })
+            this.form.orgId = res.data[1].dictValue
+            this.form.orgName = res.data[1].dictLabel
           }
         })
         listThread().then(res => {
           this.treeData = res
         })
 
-        this.form.creatName = this.$store.state.user.name
+        this.form.createBy = this.$store.state.user.name
       }
       else {
         this.disabled = true
@@ -368,21 +371,28 @@ export default {
     /**表格新增 */
     handleAddBtn () {
       this.dialogVisible = true
+      this.queryParams = {
+        pageNum: 1,
+        pageSize: 10
+      }
+      this.getItemList()
     },
     /**表格删除 */
     deleteRow (index) {
-      this.form.wmMiscShipLineList.splice(index,1)
+      this.form.wmMiscRcvTransLineList.splice(index,1)
     },
     filterNode(value, data) {
       if (!value) return true;
       return data.label.indexOf(value) !== -1;
     },
-    handleNodeClick(data) {
-      console.log(data)
+    handleNodeClick(data, node) {
+      this.selectNode = node
+      this.selectData = data
+      this.getItemList(node, data)
     },
     /** 搜索按钮操作 */
     handleQuery () {
-      this.getItemList()
+      this.getItemList(this.selectNode, this.selectData)
     },
     /** 重置按钮操作 */
     resetQuery () {
@@ -390,14 +400,56 @@ export default {
         pageNum: 1,
         pageSize: 10
       }
-      this.getItemList()
+      this.getItemList(this.selectNode, this.selectData)
     },
-    getItemList () {
-      console.log(this.queryParams)
+    getItemList (node, data) {
+      this.selectNode = node
+      this.selectData = data
+      if (node) {
+        switch (node.level) {
+          case 1:
+            this.queryParams.warehouse = data.value
+            this.queryParams.storageLocation = ''
+            this.queryParams.storageArea = ''
+            break;
+          case 2:
+            this.queryParams.warehouse = ''
+            this.queryParams.storageLocation = data.value
+            this.queryParams.storageArea = ''
+            break;
+          case 3:
+            this.queryParams.warehouse = ''
+            this.queryParams.storageLocation = ''
+            this.queryParams.storageArea = data.value
+            break;
+        }
+      }
+      this.queryParams.orgId = this.form.orgId
+      this.queryParams.isStocked = 1
+      getItemListTable(this.queryParams).then( res => {
+        this.queryParams.pageNum = res.pagination.number
+        this.queryParams.pageSize = res.pagination.size
+        this.total = res.pagination.total
+        this.gridData = res.data.map(item => {
+          let wharehouseName = item.wharehouseName ? item.wharehouseName + '--' : ''
+          let locationName = item.locationName ?  item.locationName + '--' : ''
+          let areaName = item.areaName ? item.areaName : ''
+          item.place =  wharehouseName  + locationName + areaName
+          return item
+        })
+      })
     },
     // 多选框选中数据
     handleSelectionChange (selection) {
       this.selection = selection
+    },
+    selectAddOrder() {
+      this.form.wmMiscRcvTransLineList = this.form.wmMiscRcvTransLineList.concat(this.selection);
+      this.form.wmMiscRcvTransLineList = [...new Set(this.form.wmMiscRcvTransLineList)];
+      console.log(this.form.wmMiscRcvTransLineList)
+      // this.form.wmMiscRcvTransLineList = this.form.wmMiscRcvTransLineList.filter(i => !this.form.wmMiscRcvTransLineList.includes(i.barcodeId))
+      this.dialogVisible = false
+      this.selection = []
     }
   }
 }
@@ -408,5 +460,10 @@ export default {
     font-size: 20px;
     font-weight: bold;
     padding-bottom: 16px;
+  }
+  .el_dialog_div {
+    height: 75vh;
+    overflow-y: scroll;
+    overflow-x: hidden;
   }
 </style>

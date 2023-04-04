@@ -101,7 +101,7 @@ export default {
         url: '/system/TransferIn/find-details',
         method: 'post',
         data: JSON.stringify({
-          orgId: '1002106210000278', // TODO: should be replace
+          orgId: '1001712062695280', // TODO: should be replace
           orderId: this.$route.query.id,
           boxCode,
           pageNum: number,

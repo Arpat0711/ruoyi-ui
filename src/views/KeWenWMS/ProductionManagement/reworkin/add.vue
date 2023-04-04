@@ -164,7 +164,7 @@ export default {
         data: JSON.stringify({
           ...payload,
           isStocked: 0, boxCode, itemCode, itemName, lotInfo, pageSize: this.pagination.size, pageNum: this.pagination.number,
-          orgId: '1002106210000278' // TODO: should be replace
+          orgId: '1001712062695280' // TODO: should be replace
         })
       }).then((resp) => {
         this.pagination = resp.pagination;
@@ -245,7 +245,7 @@ export default {
           url: '/system/TransferIn/add-new-one',
           method: 'post',
           data: JSON.stringify({
-            orgId: '1002106210000278', // TODO: should be replace
+            orgId: '1001712062695280', // TODO: should be replace
             barcodeIds
           })
         }).then((resp) => {

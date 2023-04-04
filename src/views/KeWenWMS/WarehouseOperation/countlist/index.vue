@@ -9,9 +9,9 @@
     >
       <el-row>
         <el-col :span="8">
-          <el-form-item label="盘点计划号" prop="clientCode">
+          <el-form-item label="盘点计划号" prop="planDocNo">
             <el-input
-              v-model="queryParams.clientCode"
+              v-model="queryParams.planDocNo"
               placeholder="请输入盘点计划号"
               clearable
               @keyup.enter.native="handleQuery"
@@ -20,9 +20,9 @@
           </el-form-item>
         </el-col>
         <el-col :span="8">
-          <el-form-item label="盘点单号" prop="clientCode">
+          <el-form-item label="盘点单号" prop="orderDocNo">
             <el-input
-              v-model="queryParams.clientCode"
+              v-model="queryParams.orderDocNo"
               placeholder="请输入盘点单号"
               clearable
               @keyup.enter.native="handleQuery"
@@ -31,9 +31,9 @@
           </el-form-item>
         </el-col>
         <el-col :span="8">
-          <el-form-item label="执行人" prop="clientCode">
+          <el-form-item label="执行人" prop="operatorName">
             <el-input
-              v-model="queryParams.clientCode"
+              v-model="queryParams.operatorName"
               placeholder="请输入执行人"
               clearable
               @keyup.enter.native="handleQuery"
@@ -42,45 +42,54 @@
           </el-form-item>
         </el-col>
         <el-col :span="8">
-          <el-form-item label="状态" prop="clientCode">
+          <el-form-item label="状态" prop="status">
             <el-select v-model="queryParams.status" placeholder="请选择">
               <el-option
-                  v-for="dict in dict.type.pandiandan_status"
-                  :key="dict.value"
-                  :label="dict.label"
-                  :value="dict.value">
-                </el-option>
+                v-for="dict in dict.type.pandiandan_status"
+                :key="dict.value"
+                :label="dict.label"
+                :value="dict.value"
+              >
+              </el-option>
             </el-select>
           </el-form-item>
         </el-col>
         <el-col :span="8">
-          <el-form-item label="盘点类型" prop="type">
-            <el-select v-model="queryParams.type" placeholder="请选择" size="medium">
+          <el-form-item label="盘点类型" prop="docType">
+            <el-select
+              v-model="queryParams.docType"
+              placeholder="请选择"
+              size="medium"
+            >
               <el-option
-                  v-for="dict in dict.type.pandian_type"
-                  :key="dict.value"
-                  :label="dict.label"
-                  :value="dict.value">
-                </el-option>
+                v-for="dict in dict.type.pandian_type"
+                :key="dict.value"
+                :label="dict.label"
+                :value="dict.value"
+              >
+              </el-option>
             </el-select>
           </el-form-item>
         </el-col>
         <el-col :span="8">
           <el-form-item>
             <div slot="label">
-              <el-select v-model="queryParams.time" placeholder="请选择">
-                <el-option label="创建时间" value="creattime" />
-                <el-option label="盘点时间" value="pandiantime" />
+              <el-select v-model="queryParams.timeType" placeholder="请选择">
+                <el-option label="盘点时间" value="0" />
+                <el-option label="执行时间" value="1" />
+                <el-option label="完成时间" value="2" />
               </el-select>
             </div>
             <el-date-picker
-              v-model="queryParams.businessDate"
+              v-model="businessDate"
               type="datetimerange"
               range-separator="至"
               start-placeholder="开始日期"
               end-placeholder="结束日期"
+              value-format="yyyy-MM-dd"
               clearable
-              @keyup.enter.native="handleQuery" >
+              @keyup.enter.native="handleQuery"
+            >
             </el-date-picker>
           </el-form-item>
         </el-col>
@@ -118,14 +127,14 @@
       <el-table-column
         label="盘点计划号"
         align="center"
-        prop="docNo"
+        prop="pcode"
         :show-overflow-tooltip="true"
       >
       </el-table-column>
       <el-table-column
         label="盘点主题"
         align="center"
-        prop="docNo"
+        prop="plan.docTopic"
         :show-overflow-tooltip="true"
       >
       </el-table-column>
@@ -136,26 +145,42 @@
         :show-overflow-tooltip="true"
       >
         <template slot-scope="scope">
-          <el-button size="mini" type="text" @click="Goto(scope.row)">{{
-            scope.row.id
+          <el-button type="text" @click="Goto(scope.row.id)">{{
+            scope.row.docNo
           }}</el-button>
         </template>
       </el-table-column>
-      <el-table-column label="盘点日期" align="center" prop="tel" />
-      <el-table-column label="盘点类型" align="center" prop="clientType">
+      <el-table-column label="盘点日期" align="center" prop="plan.planTime" />
+      <el-table-column label="盘点类型" align="center" prop="docType">
         <template slot-scope="scope">
           <dict-tag
             :options="dict.type.pandian_type"
-            value="0"
+            :value="scope.row.docType"
           />
         </template>
       </el-table-column>
-      <el-table-column label="执行人" align="center" prop="docNo" />
-      <el-table-column label="执行时间" align="center" prop="tel" />
-      <el-table-column label="完成时间" align="center" prop="clientNick" />
-      <el-table-column label="差异单号" align="center" prop="clientType" />
-      <el-table-column label="状态" align="center" prop="tel" />
-      <el-table-column label="是否首盘" align="center" prop="clientNick" />
+      <el-table-column label="执行人" align="center" prop="operatorName" />
+      <el-table-column label="执行时间" align="center" prop="executeTime" />
+      <el-table-column label="完成时间" align="center" prop="finishedTime" />
+      <el-table-column
+        label="差异单号"
+        align="center"
+        prop="plan.checkDiffDocNo"
+      />
+      <el-table-column label="状态" align="center" prop="status">
+        <template slot-scope="scope">
+          <dict-tag
+            :options="dict.type.pandiandan_status"
+            :value="scope.row.status"
+          />
+        </template>
+      </el-table-column>
+      <el-table-column label="是否首盘" align="center" prop="first">
+        <template slot-scope="scope">
+          <div v-if="scope.row.first == true">是</div>
+          <div v-else>否</div>
+        </template>
+      </el-table-column>
       <el-table-column
         label="操作"
         align="center"
@@ -166,7 +191,7 @@
             size="mini"
             type="text"
             icon="el-icon-edit"
-            @click="handleUpdate(scope.row)"
+            @click="handleUpdate(scope.row.id)"
             >编辑</el-button
           >
         </template>
@@ -181,45 +206,57 @@
       @pagination="getList"
     />
 
-    <el-dialog title="盘点单修改" :visible.sync="open" width="660px" append-to-body :close-on-click-modal="false"	:show-close="false">
+    <el-dialog
+      title="盘点单修改"
+      :visible.sync="open"
+      width="660px"
+      append-to-body
+      :close-on-click-modal="false"
+      :show-close="false"
+    >
       <el-form ref="form" :model="form" :rules="rules" label-width="120px">
         <el-row>
           <el-col :span="16">
             <el-form-item label="盘点主题" prop="name">
-               {{ form.name }}
+              {{ form.name }}
             </el-form-item>
           </el-col>
         </el-row>
         <el-row>
           <el-col :span="16">
             <el-form-item label="盘点计划号" prop="plan">
-              {{ form.plan }}
+              {{ form.pcode }}
             </el-form-item>
           </el-col>
         </el-row>
         <el-row>
           <el-col :span="16">
             <el-form-item label="盘点单号" prop="code">
-              {{ form.code }}
+              {{ form.docNo }}
             </el-form-item>
           </el-col>
         </el-row>
         <el-row>
           <el-col :span="16">
             <el-form-item label="盘点时间" prop="time">
-              {{ form.time }}
+              {{ form.docNo }}
             </el-form-item>
           </el-col>
         </el-row>
         <el-row>
           <el-col :span="16">
-            <el-form-item label="执行人" prop="clientName">
-              <el-select v-model="form.clientName" filterable placeholder="请选择" style="width: 100%;">
+            <el-form-item label="执行人" prop="operatorId">
+              <el-select
+                v-model="form.operatorId"
+                filterable
+                placeholder="请选择"
+              >
                 <el-option
-                  v-for="dict in dict.type.org"
-                  :key="dict.value"
-                  :label="dict.label"
-                  :value="dict.value">
+                  v-for="item in userList"
+                  :key="item.userId"
+                  :label="item.userName"
+                  :value="item.userId"
+                >
                 </el-option>
               </el-select>
             </el-form-item>
@@ -235,14 +272,15 @@
 </template>
 
 <script>
-import { getList } from "@/api/WarehouseOperation/countsheet"
+import { getDicts } from "@/api/system/dict/data"
+import { getList, getDetail, getUser, updateOrder } from "@/api/WarehouseOperation/countlist"
 
 export default {
   name: "countlist",
-  dicts: ['pandiandan_status', 'pandian_type' ],
+  dicts: ['pandiandan_status', 'pandian_type'],
   data () {
     return {
-      id: '',
+      checkPlanId: '',
       loading: false,
       // 显示搜索条件
       showSearch: true,
@@ -255,37 +293,42 @@ export default {
         pageNum: 1,
         pageSize: 10
       },
+      businessDate: [],
       selection: [],
       open: false,
       form: {},
       rules: {
-        clientName: [
-          { type: 'array', required: true, message: '请选择', trigger: 'change' }
+        operatorId: [
+          { required: true, message: '请选择', trigger: 'change' }
         ]
-      }
+      },
+      userList: []
     }
   },
   created () {
-    if(this.$route.query.row) {
-      this.id = this.$route.query.row
-      this.getQuery()
+    if (this.$route.query.row) {
+      this.checkPlanId = this.$route.query.row
+      getDicts('org').then(res => {
+        if (res.code == 200) {
+          console.log(res)
+          this.queryParams.orgCode = res.data[1].dictValue
+          this.getList()
+        }
+      })
     }
   },
   mounted () {
   },
   methods: {
-    getQuery () {
-      let that = this
-      that.queryParams.id = this.id
-      that.queryParams = Object.assign(that.queryParams, that.form)
-      
-      console.log(that.queryParams)
-      that.getList()
-    },
     /** 查询客户列表 */
     getList () {
+      if (this.businessDate) {
+        this.queryParams.startTime = this.businessDate[0]
+        this.queryParams.endTime = this.businessDate[1]
+      }
+      this.queryParams.checkPlanId = this.checkPlanId
       getList(this.queryParams).then(res => {
-        if(res.code == 200) {
+        if (res.code == 200) {
           this.planList = res.rows
           this.total = res.total
         }
@@ -300,7 +343,7 @@ export default {
       this.queryParams = {
         pageNum: 1,
         pageSize: 10,
-        id: this.id
+        orgCode: this.queryParams.orgCode
       }
       this.getList()
     },
@@ -309,20 +352,40 @@ export default {
       this.selection = selection
     },
     //点击编号跳转详情页面
-    Goto (row) {
-      row.type = 'detail'
-      this.$router.push({ path: '/KeWenWMS/WarehouseOperation/countlistdetails', query: { row: row } })
+    Goto (id) {
+      this.$router.push({ path: '/KeWenWMS/WarehouseOperation/countlistdetails', query: { row: id } })
     },
     /** 修改按钮操作 */
-    handleUpdate (row) {
+    handleUpdate (id) {
       this.open = true
-      console.log(row)
+      this.getUser()
+      getDetail(id).then(res => {
+        if (res.code == 200) {
+          this.form = {
+            id: res.data.id,
+            docTopic: res.data.docTopic,
+            pcode: res.data.pcode,
+            docNo: res.data.docNo,
+            planTime: res.data.planTime,
+            operatorId: parseInt(res.data.nominatorId)
+          }
+        }
+      })
     },
     /** 提交按钮 */
     submitForm () {
       this.$refs.form.validate((valid) => {
         if (valid) {
-          console.log(this.form)
+          updateOrder(this.form.id, this.form.operatorId).then(res => {
+            if (res.code == 200) {
+              this.$message.success(res.msg)
+              this.open = false
+              this.getList()
+            }
+            else {
+              this.$message.error(res.msg)
+            }
+          })
         }
       })
     },
@@ -331,18 +394,18 @@ export default {
       this.open = false
       this.$refs.form.resetFields()
     },
-    /** 删除按钮操作 */
-    handleDelete (row) {
-
+    getUser () {
+      var params = {
+        pageNum: 1,
+        pageSize: 100,
+        roleId: 102
+      }
+      getUser(params).then(res => {
+        if (res.code == 200) {
+          this.userList = res.rows
+        }
+      })
     },
-    /** 导出按钮操作 */
-    handleExport () {
-
-    },
-    //审核
-    handleExamine () {
-
-    }
   }
 };
 </script>

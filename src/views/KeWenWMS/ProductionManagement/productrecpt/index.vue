@@ -330,7 +330,7 @@ export default {
       data.createBy = createBy
       //data.recptDate = recptDate
       data.tempPanelCode = tempPanelCode
-      data.orgId = '1002106210000278'
+      data.orgId = '1001712062695280'
 
       Vue.axios({
         method: "post",

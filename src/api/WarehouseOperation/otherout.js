@@ -42,9 +42,9 @@ export function MiscRcvTransDelete(data) {
   })
 }
 
-export function getBatch(data) {
+export function getItemListTable(data) {
   return request({
-    url: '/system/MiscRcvTrans/listone',
+    url: '/system/barcode/find-by-orgid-and-location-and-condition',
     method: 'post',
     data: data
   })

@@ -630,7 +630,7 @@ export default {
       console.log(BcRuleId)
       let that = this
       let token = getToken()
-      let orgId = 1002106210000278
+      let orgId = 1001712062695280
       Vue.axios({
         method: 'GET',
         url: serverUrl + 'system/bcdrule/' + BcRuleId + "/" + orgId,

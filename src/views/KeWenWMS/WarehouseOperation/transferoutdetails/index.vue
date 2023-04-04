@@ -439,7 +439,7 @@ export default {
     getBatch (itemCode, index) {
       var params = {
         data: {
-          orgId: "1002106210000278",
+          orgId: "1001712062695280",
           itemCode: itemCode
         }
       }

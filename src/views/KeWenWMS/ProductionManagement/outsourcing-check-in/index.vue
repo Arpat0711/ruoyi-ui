@@ -189,7 +189,7 @@ export default {
         url: '/system/MiscRcvTrans/find-by-condition',
         method: 'post',
         data: JSON.stringify({
-          orgId: '1002106210000278',  // TODO: should be replace
+          orgId: '1001712062695280',  // TODO: should be replace
           docType: '', // TODO: should be replace
           docNo,
           executorTime,

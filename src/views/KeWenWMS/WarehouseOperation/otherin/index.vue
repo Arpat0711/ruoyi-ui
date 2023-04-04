@@ -105,13 +105,9 @@
         </template>
       </el-table-column>
       <el-table-column label="杂收组织" align="center" prop="orgName" />
-      <!-- <el-table-column label="杂收存储地点" align="center" prop="remark" /> -->
-      <el-table-column label="杂收时间" align="center" prop="createTime">
-        <template slot-scope="scope">
-          <span>{{ parseTime(scope.row.createTime, '{y}-{m}-{d}') }}</span>
-        </template>
+      <el-table-column label="杂收时间" align="center" prop="approveTime">
       </el-table-column>
-      <el-table-column label="杂收人" align="center" prop="createName" />
+      <el-table-column label="杂收人" align="center" prop="executorName" />
       <el-table-column label="状态" align="center" prop="status">
         <template slot-scope="scope">
           <dict-tag
@@ -123,6 +119,7 @@
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width" >
         <template slot-scope="scope">
           <el-popconfirm
+            v-if="scope.row.status == 0"
             icon="el-icon-warning-outline"
             icon-color="red"
             title="确定删除吗？"

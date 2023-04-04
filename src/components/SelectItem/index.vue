@@ -82,7 +82,11 @@ export default {
     },
     methods: {
       Add (row, index) {
-        
+        this.queryParams = {
+          pageNum: 1,
+          pageSize: 10,
+          orgId: this.queryParams.orgId
+        }
         if (index != this.index) {
           this.templateSelection = ''
           this.selectRow = {}

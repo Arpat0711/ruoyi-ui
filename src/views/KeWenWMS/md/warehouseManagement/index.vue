@@ -459,7 +459,7 @@ export default {
       that.open = false
       let token = getToken()
       // data = JSON.stringify(data)
-      data.orgId = 1002106210000278                         //临时默认数值
+      data.orgId = 1001712062695280                         //临时默认数值
       data.orgName = '1001'                     //临时默认数值
       Vue.axios({
         method: 'POST',

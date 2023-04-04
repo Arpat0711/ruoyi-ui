@@ -17,16 +17,14 @@
         <el-row>
           <el-col :span="20" :xs="4">
             <el-row>
-              <el-col :span="8">
+              <el-col :span="8" v-if="disabled" >
                 <el-form-item label="杂收单号" prop="docNo">
-                  <span v-if="disabled" >{{ form.docNo }}</span>
-                  <el-input v-model="form.docNo" v-else />
+                  <span>{{ form.docNo }}</span>
                 </el-form-item>
               </el-col>
               <el-col :span="8">
-                <el-form-item label="单据类型" prop="docType">
-                  <span v-if="disabled" >{{ form.docType }}</span>
-                  <el-input v-model="form.docType" v-else />
+                <el-form-item label="单据类型" prop="docTypeName">
+                  <span >{{ form.docTypeName }}</span>
                 </el-form-item>
               </el-col>
               <el-col :span="8">
@@ -42,35 +40,14 @@
                   ></el-date-picker>
                 </el-form-item>
               </el-col>
-              <!-- <el-col :span="8">
-                <el-form-item label="受益部门编码" prop="benefitDpt">
-                  <span v-if="disabled" >{{ form.benefitDpt }}</span>
-                  <el-input v-model="form.benefitDpt" v-else />
-                </el-form-item>
-              </el-col> -->
               <el-col :span="8">
                 <el-form-item label="备注" prop="remark">
                   <span v-if="disabled" >{{ form.remark }}</span>
                   <el-input v-model="form.remark" v-else />
                 </el-form-item>
               </el-col>
-              <!-- <el-col :span="6">
-                <el-form-item label="状态" prop="status">
-                  <el-input v-model="form.status" :disabled="disabled" />
-                </el-form-item>
-              </el-col> -->
-              <!-- <el-col :span="6">
-                <el-form-item label="创建人" prop="createBy">
-                  <el-input v-model="form.createBy" :disabled="disabled" />
-                </el-form-item>
-              </el-col> -->
             </el-row>
           </el-col>
-          <!-- <el-col :span="4" :xs="4" style="display: flex; justify-content: end">
-            <el-form-item>
-              
-            </el-form-item>
-          </el-col> -->
         </el-row>
       </el-form>
     </div>
@@ -212,7 +189,7 @@
         <el-table-column property="itemCode" label="物料编码" />
         <el-table-column property="lotinfo" label="批次号" />
         <el-table-column property="qty" label="数量" />
-        <el-table-column property="place" label="库位信息" />
+        <el-table-column property="storageAreaName" label="库位信息" />
       </el-table>
     </el-dialog>
   </div>
@@ -245,23 +222,8 @@ export default {
         docNo: [
           { required: true, message: '请输入单号', trigger: 'blur' }
         ],
-        docType: [
-          { required: true, message: '请输入单据类型编码', trigger: 'blur' }
-        ],
-        businessDate: [
-          { type: 'string', required: true, message: '请选择业务日期', trigger: 'change' }
-        ],
-        benefitDpt: [
-          { required: true, message: '请输入受益部门编码', trigger: 'blur' }
-        ],
         remark: [
           { required: false, message: '请输入备注', trigger: 'blur' }
-        ],
-        status: [
-          { required: true, message: '请输入状态', trigger: 'blur' }
-        ],
-        createBy: [
-          { required: false, message: '请输入创建人', trigger: 'blur' }
         ]
       },
       tableRules: {
@@ -279,12 +241,6 @@ export default {
         ],
         unit: [
           { required: true, message: '请输入单位', trigger: 'blur' }
-        ],
-        isMfg: [
-          { required: true, message: '请选择', trigger: 'change' }
-        ],
-        isZerocost: [
-          { required: true, message: '请选择', trigger: 'change' }
         ]
       },
       //遮罩层开启关闭标识
@@ -301,10 +257,11 @@ export default {
       dialogTitle: '',
       dialogVisible: false,
       gridData: [],
-      showButton: true
+      showButton: true,
+      docType: '',
+      docTypeName: ''
     }
   },
-
   created () {
     this.getQuery(this.$route.query.row)
   },
@@ -315,33 +272,44 @@ export default {
       Object.keys(row).forEach(function (key) {
         that.form[key] = row[key]
       })
-      if (that.form.type == 'add') {
-        this.disabled = false
-        that.form = {
-          type: 'add',
-          status: 0,
-          createTime: new Date(),
-          wmMiscRcvTransLineList: []
-        }
-        getDicts('org').then(res => {
-          if (res.code == 200) {
-            this.form.orgId = res.data[1].dictValue
-            this.form.orgName = res.data[1].dictLabel
+      getDicts('rcv_trans_otherin').then(res => {
+        if (res.code == 200) {
+          this.docType = res.data[0].dictValue
+          this.docTypeName = res.data[0].dictLabel
+          if (that.form.type == 'add') {
+            this.disabled = false
+            that.form = {
+              type: 'add',
+              status: 0,
+              createTime: new Date(),
+              wmMiscRcvTransLineList: [],
+              docType: this.docType,
+              docTypeName: this.docTypeName
+            }
+            getDicts('org').then(res => {
+              if (res.code == 200) {
+                this.form.orgId = res.data[1].dictValue
+                this.form.orgName = res.data[1].dictLabel
+              }
+            })
+            this.form.createCode = this.$store.state.user.name
+            this.form.createName = this.$store.state.user.nickname
           }
-        })
-        this.form.createCode = this.$store.state.user.name
-        this.form.createName = this.$store.state.user.nickname
-      }
-      else {
-        this.disabled = true
-        this.getList()
-      }
+          else {
+            this.disabled = true
+            this.getList()
+          }
+        }
+      })
+      
     },
     /**表格数据赋值 */
     getList () {
       getDetail(this.form.id).then(res => {
         if (res.code == 200) {
           this.form = res.data
+          this.form.docType = this.docType
+          this.form.docTypeName = this.docTypeName
           if (this.form.status == 0) {
             this.showSignature('开立', 'black')
           }
@@ -355,6 +323,7 @@ export default {
     handleSubmit () {
       this.$refs['form'].validate((valid) => {
         if (valid) {
+          console.log(this.form)
           if (this.form.wmMiscRcvTransLineList.length == 0) {
             this.$message.error('请添加数据行')
           }
@@ -434,7 +403,7 @@ export default {
     detail (row) {
       this.dialogTitle = '箱码明细'
       this.dialogVisible = true
-      getWmMiscRcvTransBoxList({pid: row.pid}).then(res => {
+      getWmMiscRcvTransBoxList({pid: row.pid, lineid: row.id, itemCode:  row.itemCode, lotInfo: row.lotinfo, orgId: this.form.orgId }).then(res => {
         if (res.code == 200) {
           this.gridData = res.rows
         }

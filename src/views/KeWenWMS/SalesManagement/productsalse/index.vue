@@ -399,7 +399,7 @@ export default {
       let that = this
       let token = getToken()
       let data = {}
-      data.orgId = 1002106210000278
+      data.orgId = 1001712062695280
       Vue.axios({
         method: 'post',
         url: serverUrl + 'system/loading/lists',

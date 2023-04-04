@@ -490,7 +490,7 @@ export default {
       let token = getToken()
       let data = {}
       data = JSON.parse(JSON.stringify(formData))
-      data.orgId = 1002106210000278
+      data.orgId = 1001712062695280
       data.orgName = '1001'
       data.locationId = this.$route.query.locationId
       console.log(data)

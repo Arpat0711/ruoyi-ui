@@ -23,3 +23,33 @@ export const getUser = (data) => {
     params: data
   })
 }
+
+export function addPlan(data) {
+  return request({
+    url: '/system/WmsCheckPlan/add',
+    method: 'post',
+    data: data
+  })
+}
+
+export const getDetail = (id) => {
+  return request({
+    url: '/system/WmsCheckPlan/' + id,
+    method: 'get'
+  })
+}
+
+export function updatePlan(id,data) {
+  return request({
+    url: '/system/WmsCheckPlan/' + id,
+    method: 'put',
+    data: data
+  })
+}
+
+export function delPlan(id) {
+  return request({
+    url: '/system/WmsCheckPlan/' + id,
+    method: 'delete'
+  })
+}

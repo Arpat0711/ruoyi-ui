@@ -79,10 +79,10 @@
           prop="quantity"
         />
         <el-table-column
-          label="剩余数量"
+          label="可组托数量"
           width="90px"
           align="center"
-          prop="attr3"
+          prop="viableNum"
         />
         <el-table-column
           label="本次组托数量"
@@ -107,7 +107,11 @@
 
         <el-table-column label="箱容数" align="center" prop="boxQty" />
         <el-table-column label="托容数" align="center" prop="panelQty" />
-        <el-table-column label="客户标识" align="center" prop="attr1" />
+        <el-table-column
+          label="客户标识"
+          align="center"
+          prop="identification"
+        />
 
         <!-- <el-table-column
           label="生产订单编号"
@@ -270,20 +274,19 @@
         ref="UpdateDialogTable"
       >
         <el-table-column type="selection" width="55" align="center" />
+
+        <el-table-column
+          label="交期"
+          width="100px"
+          align="center"
+          prop="shippingDeadline"
+          fixed
+        />
         <el-table-column
           label="销售订单号"
           align="center"
           prop="soDocno"
           width="150px"
-          :show-overflow-tooltip="true"
-        />
-
-        <el-table-column
-          label="交期"
-          width="150px"
-          align="center"
-          prop="deadline"
-          fixed
           :show-overflow-tooltip="true"
         />
         <el-table-column
@@ -293,6 +296,11 @@
           prop="custPoNo"
           :show-overflow-tooltip="true"
         />
+        <el-table-column
+          label="客户标识"
+          align="center"
+          prop="identification"
+        />
         <!-- <el-table-column
           label="销售订单行ID"
           width="150px"
@@ -300,12 +308,7 @@
           prop="solineId"
           :show-overflow-tooltip="true"
         /> -->
-        <el-table-column
-          label="行号"
-          align="center"
-          prop="docLineno"
-          :show-overflow-tooltip="true"
-        />
+
         <el-table-column
           label="物料编码"
           width="150px"
@@ -327,13 +330,7 @@
           prop="custItemId"
           :show-overflow-tooltip="true"
         /> -->
-        <el-table-column
-          label="客户料号"
-          width="120px"
-          align="center"
-          prop="custItemCode"
-          :show-overflow-tooltip="true"
-        />
+
         <el-table-column
           label="物料总数"
           width="120px"
@@ -341,8 +338,8 @@
           prop="quantity"
           :show-overflow-tooltip="true"
         />
-        <el-table-column label="客户标识" align="center" prop="attr1" />
-        <el-table-column label="可组托数量" align="center" prop="attr3" />
+
+        <el-table-column label="可组托数量" align="center" prop="viableNum" />
         <el-table-column
           label="本次组托数量"
           width="170px"
@@ -364,13 +361,6 @@
           </template>
         </el-table-column>
         <el-table-column
-          label="客户品名"
-          width="150px"
-          align="center"
-          prop="custItemName"
-          :show-overflow-tooltip="true"
-        />
-        <el-table-column
           label="箱容数"
           width="150px"
           align="center"
@@ -384,13 +374,45 @@
           prop="panelQty"
           :show-overflow-tooltip="true"
         />
+        <el-table-column label="客户类型" align="center" prop="category" />
         <el-table-column
           label="单位"
           align="center"
           prop="measure"
           :show-overflow-tooltip="true"
         />
-
+        <el-table-column
+          label="行号"
+          align="center"
+          prop="docLineno"
+          :show-overflow-tooltip="true"
+        />
+        <el-table-column
+          label="客户编码"
+          width="120px"
+          align="center"
+          prop="custCode"
+        />
+        <el-table-column
+          label="客户名称"
+          width="120px"
+          align="center"
+          prop="custName"
+        />
+        <el-table-column
+          label="客户料号"
+          width="120px"
+          align="center"
+          prop="custItemCode"
+          :show-overflow-tooltip="true"
+        />
+        <el-table-column
+          label="客户品名"
+          width="150px"
+          align="center"
+          prop="custItemName"
+          :show-overflow-tooltip="true"
+        />
         <!-- <el-table-column
           label="创建人"
           align="center"
@@ -472,7 +494,7 @@
             align-items: center;
             justify-content: center;
           "
-          @click="download(dict.type.cust_tag)"
+          @click="download(dict.type.fine_report)"
           :loading="loading"
           v-hasPermi="['md:md:client:add']"
           >导出</el-button
@@ -489,6 +511,7 @@
             justify-content: center;
           "
           @click="saveData"
+          v-if="viewButtons"
           :loading="loading"
           v-hasPermi="['md:md:client:add']"
           >保存</el-button
@@ -505,6 +528,7 @@
             justify-content: center;
           "
           @click="addGroupPallet"
+          v-if="viewButtons"
           :loading="loading"
           v-hasPermi="['md:md:client:add']"
           >组托</el-button
@@ -521,6 +545,7 @@
             justify-content: center;
           "
           @click="splitGroupPallet"
+          v-if="viewButtons"
           :loading="loading"
           v-hasPermi="['md:md:client:add']"
           >拆托</el-button
@@ -552,6 +577,7 @@
             justify-content: center;
           "
           @click="openDrawer"
+          v-if="viewButtons"
           :loading="loading"
           v-hasPermi="['md:md:client:add']"
           >查看销售订单信息</el-button
@@ -643,7 +669,7 @@
       />
       <el-table-column label="托容数" align="center" prop="panelQty" />
       <el-table-column label="托体积(m³)" align="center" prop="volume" />
-      <el-table-column label="托净重(kg)" align="center" prop="packageRough" />
+      <el-table-column label="净重(kg)" align="center" prop="packageRough" />
       <el-table-column label="托毛重(kg)" align="center" prop="packageNet" />
       <!-- <el-table-column
         label="生产订单编号"
@@ -743,7 +769,7 @@ import { getDicts } from "@/api/system/dict/data"
 var serverUrl = process.env.VUE_APP_BASE_API //获取.env.配置文件的服务器路径
 export default {
   name: "grouppalletDetails",
-  dicts: ["cust_tag"],
+  dicts: ["cust_tag", "fine_report"],
   data () {
     const validateInput = (rule, value, callback) => { }
     return {
@@ -837,6 +863,9 @@ export default {
         pageNum: 1,
       },
 
+      /**审核状态未已审核时不显示操作按钮标识 */
+      viewButtons: true,
+
       /**u9选取销售订单行 */
       u9solines: [],
 
@@ -867,6 +896,11 @@ export default {
       this.getTableData(this.$route.query.res)
       this.showDownload = false
     } else if (this.$route.query.from == "checkPallet") {
+      if (this.$route.query.res.status == "1") {
+        this.viewButtons = false
+      } else {
+        this.viewButtons = true
+      }
       this.checkPalletGroup(this.$route.query.res) //点击组托计划号跳过来的进行查询
       this.showDownload = true
     }
@@ -887,7 +921,7 @@ export default {
       console.log(that.showDownload)
       let token = getToken()
       let data = {}
-      data.orgId = 1002106210000278
+      data.orgId = 1001712062695280
       data.packageId = res.packageId
       Vue.axios({
         method: "post",
@@ -1264,7 +1298,7 @@ export default {
       let tempSelectList = []                                           //选中行去重
       let obj = {}
       for (let i = 0; i < selectList.length; i++) {
-        if (!obj[selectList[i].itemCode]) {
+        if (!(obj[selectList[i].itemCode] && obj[selectList[i].soDocno])) {
           tempSelectList.push(selectList[i])
           obj[selectList[i].itemCode] = true
         }
@@ -1285,7 +1319,6 @@ export default {
       }
       //console.log("/////////selectList//////////")
       console.log(selectList)
-
 
       if (unPanelList.length == 0) {
         newList = JSON.parse(JSON.stringify(selectList))
@@ -1420,7 +1453,7 @@ export default {
     dialogInputChange (row) {
       console.log(row.inputBoxNum)
       let num = Number(row.inputBoxNum)
-      if (num < 0 || num === '' || num === null || num === undefined || num.length < 0) {
+      if (num <= 0 || num === '' || num === null || num === undefined || num.length < 0) {
         this.able = true
         row.error = "请正确输入组托箱数"
       } else if (isNaN(row.inputBoxNum)) {
@@ -1532,11 +1565,13 @@ export default {
       console.log(this.allPanelList)
       const w = window.open("about:blank")                         //可以替代window打开新页面
       tag.forEach((item) => {
+        console.log(item.label)
         let path = ''
         let query = ''
-        if (item.label == this.allPanelList[0].attr1) {
-          path = "http://192.168.20.129:8082/" + item.value
-          query = "?" + "pid=" + this.allPanelList[0].packageId
+        if (item.label == this.allPanelList[0].identification) {
+          console.log(item)
+          path = item.value
+          query = "&" + "pid=" + this.allPanelList[0].packageId
           // console.log(path + query)
           w.location.href = path + query
         }
@@ -1579,7 +1614,7 @@ export default {
       //console.log(that.UpdateDialogSelectData)
       for (let i = 0; i < that.UpdateDialogSelectData.length; i++) {                        //判断组托时选择行的销售子订单是否相同，不相同报错
         // console.log(that.dialogSelectData[0].custPoNo);
-        if (that.UpdateDialogSelectData[0].attr1 != that.UpdateDialogSelectData[i].attr1) {  //判断是否是统一客户标识 (attr1:客户标识)
+        if (that.UpdateDialogSelectData[0].identification != that.UpdateDialogSelectData[i].identification) {  //判断是否是统一客户标识 (attr1:客户标识)
           that.$message({
             type: 'error',
             message: '选择销售订单客户标识不同，请重新选择'
@@ -1647,7 +1682,7 @@ export default {
       let token = getToken()
       let u9SoLine = {}
       let deadLine = deadline
-      u9SoLine.orgId = "1002106210000040"
+      u9SoLine.orgId = "1001612260000018"
       u9SoLine.pageNum1 = that.UpdateDialogPageData.pageNum
       u9SoLine.pageSize1 = that.UpdateDialogPageData.pageSize
 

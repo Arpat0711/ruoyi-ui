@@ -1,6 +1,6 @@
 'use strict'
 const path = require('path')
-const serverURL = "http://192.168.1.10:8082/"
+const serverURL = "http://192.168.20.126:8082/"
 
 function resolve (dir) {
   return path.join(__dirname, dir)
@@ -41,11 +41,11 @@ module.exports = {
         // target: `http://testpaichan.free.svipss.top/`,
         // target: 'http://192.168.1.10:8082/',
         // target: 'http://192.168.1.30:8082/',
-        // target: 'http://192.168.1.206:8082/',
+        // target: 'http://192.168.1.207:8082/',
         // target: 'http://kewen.fgimaxl2.vipnps.vip/',
         // target: 'http://192.168.20.142:8082/',
         // target: 'http://192.168.1.135:8082',
-        // target: 'http://192.168.1.106:8080/',
+        // target: 'http://192.168.1.111:8082/',
         // target: 'http://192.168.20.126:8082/',
         changeOrigin: true,
         pathRewrite: {

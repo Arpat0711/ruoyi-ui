@@ -86,9 +86,9 @@
           </el-form-item>
         </el-col>
         <el-col :span="6">
-          <el-form-item label="销售子订单号" prop="custPono">
+          <el-form-item label="销售子订单号" prop="custPoNo">
             <el-input
-              v-model="mainFormData.custPono"
+              v-model="mainFormData.custPoNo"
               placeholder="请输入销售子订单号"
               clearable
               @keyup.enter.native="handleMainSearch"
@@ -402,9 +402,9 @@
         </el-row>
         <el-row>
           <el-col>
-            <el-form-item label="客户类型" prop="attr4">
+            <el-form-item label="客户类型" prop="identification">
               <el-input
-                v-model="dialogFormData.attr4"
+                v-model="dialogFormData.identification"
                 placeholder="请输入客户类型"
                 @keyup.enter.native="handleDialogSearch"
               />
@@ -444,7 +444,7 @@
           label="销售子订单号"
           width="150px"
           align="center"
-          prop="custPono"
+          prop="custPoNo"
           :show-overflow-tooltip="true"
         />
         <!-- <el-table-column
@@ -454,7 +454,11 @@
           prop="solineId"
           :show-overflow-tooltip="true"
         /> -->
-        <el-table-column label="客户标识" align="center" prop="attr1" />
+        <el-table-column
+          label="客户标识"
+          align="center"
+          prop="identification"
+        />
         <el-table-column
           label="物料编码"
           width="100px"
@@ -476,7 +480,7 @@
           align="center"
           prop="quantity"
         />
-        <el-table-column label="可组托数量" align="center" prop="attr3" />
+        <el-table-column label="可组托数量" align="center" prop="viableNum" />
         <el-table-column
           label="本次组托数量"
           width="170px"
@@ -510,6 +514,7 @@
           align="center"
           prop="panelQty"
         />
+        <el-table-column label="客户类型" align="center" prop="category" />
         <el-table-column label="单位" align="center" prop="measure" />
         <el-table-column
           label="行号"
@@ -535,7 +540,7 @@
           align="center"
           prop="custItemCode"
         />
-        <el-table-column label="客户类型" align="center" prop="attr4" />
+
         <el-table-column
           label="客户品名"
           width="90px"
@@ -589,6 +594,7 @@
                 type="datetime"
                 placeholder="选择日期时间"
                 value-format="yyyy-MM-dd HH:mm:ss"
+                @change="sailScheduleChange"
               >
               </el-date-picker>
             </el-form-item>
@@ -599,6 +605,7 @@
                 type="datetime"
                 placeholder="选择日期时间"
                 value-format="yyyy-MM-dd HH:mm:ss"
+                @change="sailScheduleChange"
               >
               </el-date-picker>
             </el-form-item>
@@ -616,7 +623,7 @@
           type="primary"
           @click="SailScheduleDialogSubmitForm"
           v-else
-          :disabled="able"
+          :disabled="sailScheduleButton"
           >确定</el-button
         >
         <el-button @click="SailScheduleDialogCancel">取 消</el-button>
@@ -725,8 +732,11 @@ export default {
       /**dialog input 暂存 */
       tempRow: '',
 
-      /**船期修改dialog 显示标识 */
+      /**修改船期dialog 显示标识 */
       showSailScheduleDialog: false,
+
+      /**修改船期dialog确认按钮可用标识 */
+      sailScheduleButton: true,
 
       /**修改船期form数据 */
       SailScheduleDialogFormData: {},
@@ -873,14 +883,17 @@ export default {
         createBy: null,
         createTime: null,
         updateBy: null,
-        updateTime: null
+        updateTime: null,
+        identification: null,
+        viableNum: null,
       }
       this.autoGenFlag = false
       this.resetForm("form")
     },
     /** 搜索按钮操作 */
     handleDialogSearch () {
-      this.getDialogData(this.dialogFormData.custCode, this.dialogFormData.soDocno, this.dialogFormData.deadline, this.dialogFormData.attr4)
+      this.getDialogData(this.dialogFormData.custCode, this.dialogFormData.soDocno, this.dialogFormData.deadline, this.dialogFormData.identification
+      )
     },
     /** 重置按钮操作 */
     resetQuery () {
@@ -911,7 +924,7 @@ export default {
       console.log(row)
       let params = {}
       params.packageId = row.packageId
-      params.orgId = '1002106210000278'
+      params.orgId = '1001712062695280'
       params.status = row.status
       checkDocument(params).then(res => {
         if (res.code == 200) {
@@ -919,6 +932,15 @@ export default {
         } else {
         }
       })
+    },
+
+    /**修改船期dialog时间选择器触发执行 */
+    sailScheduleChange () {
+      if ((this.SailScheduleDialogFormData.shippingDeadline !== '' && this.SailScheduleDialogFormData.shippingDeadline !== null && this.SailScheduleDialogFormData.shippingDeadline !== undefined) && (this.SailScheduleDialogFormData.sailSchedule !== '' && this.SailScheduleDialogFormData.sailSchedule !== null && this.SailScheduleDialogFormData.sailSchedule !== this.SailScheduleDialogFormData.sailSchedule !== undefined)) {
+        this.sailScheduleButton = false
+      } else {
+        this.sailScheduleButton = true
+      }
     },
 
     /**修改船期按钮执行 */
@@ -993,7 +1015,7 @@ export default {
       } else {
         for (let i = 0; i < that.dialogSelectData.length; i++) {                        //判断组托时选择行的销售子订单是否相同，不相同报错
           console.log(that.dialogSelectData[i].postnum)
-          if (that.dialogSelectData[0].attr1 != that.dialogSelectData[i].attr1) {
+          if (that.dialogSelectData[0].identification != that.dialogSelectData[i].identification) {
             that.$message({
               type: 'error',
               message: '选择销售订单客户标识不同，请选择相同客户标识的订单'
@@ -1042,7 +1064,7 @@ export default {
     /** 删除按钮操作 */
     handleDelete (row) {
       let that = this
-      let orgId = '1002106210000278'
+      let orgId = '1001712062695280'
       handleDelete(row.packageId, orgId).then(res => {
         console.log(res)
         if (res.code == 200) {
@@ -1078,7 +1100,7 @@ export default {
     //   let that = this
     //   let token = getToken()
     //   let u9SoHead = {}
-    //   u9SoHead.orgId = "1002106210000278"
+    //   u9SoHead.orgId = "1001712062695280"
     //   // let pageNum = that.dialogPageData.pageNum
     //   // let pageSize = that.dialogPageData.pageSize
     //   // let data = {}
@@ -1105,21 +1127,21 @@ export default {
     //   })
     // },
 
-    getDialogData (custCode, soDocno, deadline, attr4) {
+    getDialogData (custCode, soDocno, deadline, identification) {
       // console.log(this.dialogFormData.deadline)
       // console.log(attr4)
       let that = this
       let token = getToken()
       let u9SoLine = {}
       let searchDeadLine = that.dialogFormData.deadline
-      u9SoLine.orgId = "1002106210000040"
+      u9SoLine.orgId = "1001612260000018"
       u9SoLine.pageNum1 = that.dialogPageData.pageNum
       u9SoLine.pageSize1 = that.dialogPageData.pageSize
       //u9SoLine.searchDeadLine = deadline
 
       u9SoLine.soDocno = soDocno
       u9SoLine.custCode = custCode
-      u9SoLine.attr4 = attr4
+      u9SoLine.identification = identification
       console.log(u9SoLine)
       // let data = {}
       // data.u9SoHead = JSON.stringify(u9SoHead)
@@ -1194,7 +1216,7 @@ export default {
         if (item.postnum == 0) {
           this.dialogSelectData.forEach((selectItem) => {
             if (item.soLineid == selectItem.soLineid) {
-              item.postnum = item.attr3
+              item.postnum = item.viableNum
             }
           })
         } else {
@@ -1215,7 +1237,7 @@ export default {
         } else if (Number(item.postnum) < 0) {
           this.able = true
           item.error = '装箱物料数不能小于0'
-        } else if (Number(item.postnum) > Number(item.attr3)) {
+        } else if (Number(item.postnum) > Number(item.viableNum)) {
           this.able = true
           item.error = '输入数量不能大于物料总数'
         } else if (isNaN(item.postnum)) {
@@ -1250,7 +1272,7 @@ export default {
       } else if (Number(row.postnum) < 0) {
         this.able = true
         row.error = '装箱物料数不能小于0'
-      } else if (Number(row.postnum) > Number(row.attr3)) {
+      } else if (Number(row.postnum) > Number(row.viableNum)) {
         this.able = true
         row.error = '输入数量不能大于物料总数'
       } else if (isNaN(row.postnum)) {

@@ -331,7 +331,7 @@ export default {
     getList (warehouseId) {
       let that = this
       let token = getToken()
-      let orgId = 1002106210000278
+      let orgId = 1001712062695280
       // console.log(token)
       Vue.axios({
         method: 'POST',
@@ -449,7 +449,7 @@ export default {
       let token = getToken()
       let data = {}
       data = JSON.parse(JSON.stringify(formData))
-      data.orgId = 1002106210000278
+      data.orgId = 1001712062695280
       data.orgName = '1001'
       data.warehouseId = that.$route.query.warehouseId
       //console.log(data)

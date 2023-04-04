@@ -3,17 +3,15 @@
     <el-card class="box-card">
       <div class="title1">
         <el-row :gutter="20">
-          <el-col :span="8">盘点主题：xxxxxxx</el-col>
-          <el-col :span="8">盘点计划单号：xxxxxxx</el-col>
-          <el-col :span="8">盘点单号：xxxxxxx</el-col>
+          <el-col :span="8">盘点主题：{{ form.checkPlanDocTopic }}</el-col>
+          <el-col :span="8">盘点计划单号：{{ form.checkPlanDocNo }}</el-col>
         </el-row>
       </div>
       <div class="el-divider el-divider--horizontal" style="background-color: #fff;"></div>
       <div>
-        <el-button type="primary" @click="handleSubmit">审核</el-button>
-        <el-button type="danger" >作废</el-button>
-        <el-button type="success" >重建盘点计划</el-button>
-        <el-button>导出</el-button>
+        <el-button type="primary" @click="examine" v-if="form.status == 0">审核</el-button>
+        <el-button type="danger" @click="closeOrderVisible = true" v-if="form.status == 0">作废</el-button>
+        <el-button @click="exportTable" >导出</el-button>
       </div>
       <div style="position: absolute;top: 40px;right: 80px;">
         <canvas width="120" height="120" id="myCanvas1"></canvas>
@@ -23,50 +21,56 @@
       <div class="title1">
        盘点信息
       </div>
-      <el-form ref="form" :model="form" :rules="rules" label-width="110px" :inline="true">
+      <el-form ref="form" :model="form" label-width="110px" :inline="true">
         <el-row>
           <el-col :span="24" :xs="4">
             <el-row>
               <el-col :span="6">
                 <el-form-item label="差异单号" prop="docNo">
-                <el-input v-model="form.docNo" :disabled="disabled" />
+                {{ form.docNo }}
               </el-form-item>
               </el-col>
               <el-col :span="6">
-                <el-form-item label="创建人" prop="docNo">
-                <el-input v-model="form.docNo" :disabled="disabled" />
+                <el-form-item label="创建人" prop="createName">
+                {{ form.createName }}
               </el-form-item>
               </el-col>
               <el-col :span="6">
-                <el-form-item label="创建时间" prop="docNo">
-                <el-input v-model="form.docNo" :disabled="disabled" />
+                <el-form-item label="创建时间" prop="createTime">
+                {{ form.createTime }}
               </el-form-item>
               </el-col>
               <el-col :span="6">
-                <el-form-item label="盘点类型" prop="docNo">
-                <el-input v-model="form.docNo" :disabled="disabled" />
+                <el-form-item label="盘点类型" prop="docType">
+                <dict-tag
+                    :options="dict.type.pandian_type"
+                    :value="form.docType"
+                  />
               </el-form-item>
               </el-col>
             </el-row>
             <el-row>
               <el-col :span="6">
-                <el-form-item label="执行人" prop="docNo">
-                <el-input v-model="form.docNo" :disabled="disabled" />
+                <el-form-item label="审核人" prop="approveName">
+                {{ form.approveName }}
               </el-form-item>
               </el-col>
               <el-col :span="6">
-                <el-form-item label="开始时间" prop="docNo">
-                <el-input v-model="form.docNo" :disabled="disabled" />
+                <el-form-item label="执行时间" prop="executeTime">
+                {{ form.executeTime }}
               </el-form-item>
               </el-col>
               <el-col :span="6">
-                <el-form-item label="完成时间" prop="docNo">
-                <el-input v-model="form.docNo" :disabled="disabled" />
+                <el-form-item label="审核时间" prop="approveTime">
+                {{ form.approveTime }}
               </el-form-item>
               </el-col>
               <el-col :span="6">
                 <el-form-item label="当前状态" prop="docNo">
-                <el-input v-model="form.docNo" :disabled="disabled" />
+                  <dict-tag
+                    :options="dict.type.pandianchayi_status"
+                    :value="form.status"
+                  />
               </el-form-item>
               </el-col>
             </el-row>
@@ -80,118 +84,105 @@
       </div>
       <el-table
         v-loading="loading"
-        :data="form.wmMiscShipLineList"
+        :data="form.wmsCheckDiffLineList"
         >
           <el-table-column type="index" width="50" label="序号" />
           <el-table-column label="物料编码" align="center" prop="itemCode" />
           <el-table-column label="物品名称" align="center" prop="itemName" />
-          <el-table-column label="批次号" align="center" prop="lotinfo" />
-          <el-table-column label="规格型号" align="center" prop="code" />
-          <el-table-column label="单位" align="center" prop="qty" />
-          <el-table-column label="系统数量" align="center" prop="qty" />
-          <el-table-column label="实盘数量" align="center" prop="qty" />
-          <el-table-column label="盈亏数量" align="center" prop="isMfg" />
-          <el-table-column label="盘点结果" align="center" prop="creattime" />
-          <el-table-column label="库位信息" align="center" prop="itemCode" />
+          <el-table-column label="批次号" align="center" prop="batchNumber" />
+          <el-table-column label="规格型号" align="center" prop="specification" />
+          <el-table-column label="单位" align="center" prop="unit" />
+          <el-table-column label="系统数量" align="center" prop="qtyIn" />
+          <el-table-column label="实盘数量" align="center" prop="qtyCheck" />
+          <el-table-column label="盈亏数量" align="center" prop="qtyDiff" />
+          <el-table-column label="盘点结果" align="center" prop="checkResult" />
+          <el-table-column label="库位信息" align="center" prop="areaName" />
       </el-table>
-      <pagination
-        v-show="ipagination.total > 0"
-        :total="ipagination.total"
-        :page.sync="ipagination.pageNum"
-        :limit.sync="ipagination.pageSize"
-        @pagination="getList"
-      />
     </div>
+    <el-dialog
+      title="提示"
+      :visible.sync="closeOrderVisible"
+      width="30%">
+      <span>是否确认作废？</span>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="closeOrderVisible = false">取 消</el-button>
+        <el-button type="primary" @click="disuse">确 定</el-button>
+      </span>
+    </el-dialog>
   </div>
 </template>
 
 <script>
-import { getDetail, miscRcvTrans, addtInsert } from '@/api/WarehouseOperation/otherout'
+import { getDicts } from "@/api/system/dict/data"
+import { getDetail, disuse } from '@/api/WarehouseOperation/countdifference'
 
 export default {
   name: 'countlistdetails',
+  dicts: ['pandianchayi_status', 'pandian_type' ],
   components: { },
   data () {
     return {
-      disabled: false,
       //form表单数据
       form: {},
-      //表单验证规则
-      rules: {
-        docNo: [
-          { required: true, message: '请输入单号', trigger: 'blur' }
-        ],
-        docType: [
-          { required: true, message: '请输入单据类型编码', trigger: 'blur' }
-        ],
-        businessDate: [
-          { type: 'string', required: true, message: '请选择业务日期', trigger: 'change' }
-        ],
-        benefitDpt: [
-          { required: true, message: '请输入受益部门编码', trigger: 'blur' }
-        ],
-        remark: [
-          { required: false, message: '请输入备注', trigger: 'blur' }
-        ],
-        status: [
-          { required: true, message: '请输入状态', trigger: 'blur' }
-        ],
-        createBy: [
-          { required: false, message: '请输入创建人', trigger: 'blur' }
-        ]
-      },
       //遮罩层开启关闭标识
       loading: false,
-      //分页参数
-      ipagination: {
-        total: 0,
-        pageNum: 1,
-        pageSize: 10
-      }
+      id: '',
+      closeOrderVisible: false
     }
   },
 
   created () {
-    this.getQuery(this.$route.query.row)
+    if(this.$route.query.row) {
+      this.id = this.$route.query.row
+      this.getDetailInfo()
+    }
   },
 
   methods: {
-    getQuery (row) {
-      let that = this
-      Object.keys(row).forEach(function (key) {
-        that.form[key] = row[key]
-      })
-      this.disabled = true
-      this.getList()
-
-    },
-    /**表格数据赋值 */
-    getList () {
-      var params = {
-        data: {
-          id: this.form.id
-        }
-      }
-      getDetail(params).then(res => {
+    /**详情查询 */
+    getDetailInfo () {
+      getDetail(this.id).then(res => {
         if(res.code == 200) {
           this.form = res.data
-          this.form.wmMiscShipLineList = [{
-            id: '111'
-          }]
-          this.showSignature('未处理', 'black')
+          this.form.docType = this.form.checkPlan.docType
+          this.form.approveName = this.form.checkPlan.approveName
+          this.form.executeTime = this.form.checkPlan.executeTime
+          this.form.approveTime = this.form.checkPlan.approveTime
+          getDicts('pandianchayi_status').then(res => {
+            if (res.code == 200) {
+              res.data.forEach(item => {
+                if (item.dictValue == this.form.status) {
+                  this.showSignature(item.dictLabel, 'black')
+                }
+              })
+            }
+          })
         }
       })
     },
-    /**保存 */
-    handleSubmit () {
-      this.$refs['form'].validate((valid) => {
-        if (valid) {
-          
-        } else {
-          console.log('error submit!!')
-          return false
+    examine () {
+      
+    },
+    disuse () {
+      this.closeOrderVisible = false
+      var params = {
+        forced: true
+      }
+      disuse(this.id, params).then(res => {
+        if (res.code == 200) {
+          this.$message.success(res.msg)
+          this.getDetailInfo()
+        }
+        else {
+          this.$message.error(res.msg)
         }
       })
+    },
+    /**导出 */
+    exportTable () {
+      this.download('/system/WmsCheckDiff/export/' + this.id, {
+        ...this.queryParams
+      }, `盘点差异单.xlsx`)
     },
     showSignature (text,color) {
       var canvas = document.getElementById('myCanvas1')

@@ -285,7 +285,7 @@ export default {
     getTreeList () {
       let that = this
       let token = getToken()
-      var orgId = '1002106210000278'
+      var orgId = '1001712062695280'
       // console.log(token)
       Vue.axios({
         methods: 'GET',
@@ -352,7 +352,7 @@ export default {
       let token = getToken()
       console.log(data)
 
-      var orgId = '1002106210000278'
+      var orgId = '1001712062695280'
       if (data != null) {
         console.log(data)
         if (data.level == 1) {
@@ -468,7 +468,7 @@ export default {
       console.log(this.queryParams.itemName, this.queryParams.itemCode, this.queryParams.batchNumber)
       let that = this
       let token = getToken()
-      let orgId = '1002106210000278'
+      let orgId = '1001712062695280'
       let itemCode = this.queryParams.itemCode
       let itemName = this.queryParams.itemName
       let batchNumber = this.queryParams.batchNumber

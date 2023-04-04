@@ -121,7 +121,7 @@
         :show-overflow-tooltip="true"
       >
         <template slot-scope="scope">
-          <el-button size="mini" type="text" @click="Goto(scope.row)">
+          <el-button type="text" @click="Goto(scope.row)">
             {{ scope.row.docNo }}</el-button>
         </template>
       </el-table-column>
@@ -142,7 +142,7 @@
           <span>{{ parseTime(scope.row.createTime, '{y}-{m}-{d}') }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="盘点日期" align="center" prop="tel" />
+      <el-table-column label="盘点日期" align="center" prop="planTime" />
       <el-table-column label="盘点类型" align="center" prop="docType">
         <template slot-scope="scope">
           <dict-tag
@@ -159,7 +159,7 @@
           />
         </template>
       </el-table-column>
-      <el-table-column label="差异单" align="center" prop="status" />
+      <el-table-column label="差异单" align="center" prop="checkDiffDocNo" />
       <el-table-column
         label="操作"
         align="center"
@@ -167,24 +167,27 @@
       >
         <template slot-scope="scope">
           <el-button
+            v-if="scope.row.status == 0"
             size="mini"
             type="text"
             icon="el-icon-edit"
             @click="handleUpdate(scope.row)"
             >编辑</el-button
           >
-          <el-button
-            size="mini"
-            type="text"
-            icon="el-icon-delete"
-            @click="handleDelete(scope.row)"
-            >删除</el-button
+          <el-popconfirm
+            v-if="scope.row.status == 0"
+            icon="el-icon-warning-outline"
+            icon-color="red"
+            title="确定删除吗？"
+            @confirm="handleDelete(scope.row.id)"
           >
+            <el-button slot="reference" type="text" icon="el-icon-delete" style="color: #f56c6c;">删除</el-button>
+          </el-popconfirm>
           <el-button
+            v-if="scope.row.status == 2"
             size="mini"
             type="text"
             icon="el-icon-delete"
-            @click="handleDelete(scope.row)"
             >生成差异单</el-button
           >
         </template>
@@ -217,10 +220,10 @@
           </el-col>
         </el-row>
         <el-row>
-          <el-col :span="16">{{form.storageAreaIds}}
+          <el-col :span="16">
             <el-form-item label="库区" prop="storageAreaIds">
              <el-cascader
-             ref="cascader"
+                ref="cascader"
                 v-model="form.storageAreaIds"
                 :options="transOptions"
                 :props="{ multiple: true, emitPath: false }"
@@ -234,12 +237,12 @@
         <el-row>
           <el-col :span="16">
             <el-form-item label="盘点人员" prop="operatorIds">
-              <el-select v-model="form.operatorIds" multiple placeholder="请选择" style="width: 100%;">
+              <el-select v-model="form.operatorIds" multiple placeholder="请选择" style="width: 100%;" @change="$forceUpdate()">
                 <el-option
-                  v-for="dict in dict.type.org"
-                  :key="dict.value"
-                  :label="dict.label"
-                  :value="dict.value">
+                  v-for="item in userList"
+                  :key="item.userId"
+                  :label="item.userName"
+                  :value="item.userId">
                 </el-option>
               </el-select>
             </el-form-item>
@@ -266,7 +269,8 @@
 
 <script>
 import { getDicts } from "@/api/system/dict/data"
-import { getList, listThread } from "@/api/WarehouseOperation/countsheet"
+import { getList, listThread, getUser, addPlan, getDetail, updatePlan, delPlan } from "@/api/WarehouseOperation/countsheet"
+import { deepClone } from '@/utils/index'
 
 export default {
   name: "countsheet",
@@ -306,13 +310,14 @@ export default {
           { type: 'array', required: true, message: '请选择', trigger: 'change' }
         ]
       },
-      transOptions: []
+      transOptions: [],
+      userList: []
     }
   },
   created () {
     getDicts('org').then(res => {
       if (res.code == 200) {
-        this.queryParams.orgCode = res.data[0].dictValue
+        this.queryParams.orgCode = res.data[1].dictValue
         this.getList()
         this.getTrans()
         this.getUser()
@@ -341,7 +346,16 @@ export default {
       })
     },
     getUser () {
-
+      var params = {
+        pageNum: 1,
+        pageSize: 100,
+        roleId: 102
+      }
+      getUser(params).then(res => {
+        if(res.code == 200) {
+          this.userList = res.rows
+        }
+      })
     },
     /** 搜索按钮操作 */
     handleQuery () {
@@ -374,13 +388,65 @@ export default {
       console.log(row)
       this.title = '修改盘点计划'
       this.open = true
+      getDetail(row.id).then(res => {
+        if(res.code == 200) {
+          // this.form = res.data
+          const arr = res.data.attr1.split(',')
+          const list = []
+          arr.map(item => {
+            list.push(parseInt(item))
+          })
+          this.form = {
+            id: res.data.id,
+            docTopic: res.data.docTopic,
+            operatorIds: list,
+            storageAreaIds: res.data.attr0.split(','),
+            planTime: res.data.planTime,
+            docType: res.data.docType
+          }
+          
+        }
+      })
 
     },
     /** 提交按钮 */
     submitForm () {
       this.$refs.form.validate((valid) => {
         if (valid) {
-          console.log(this.form)
+          if (this.form.operatorIds.length > this.form.storageAreaIds.length) {
+            this.$message.error('盘点库区总数不能小于盘点人员数')
+            return false
+          }
+          var params = {}
+          params = deepClone(this.form)
+          params.operatorIds = params.operatorIds.join(",")
+          params.storageAreaIds = params.storageAreaIds.join(",")
+          params.orgCode = this.queryParams.orgCode
+          console.log(params)
+          if(params.id) {
+            updatePlan(this.form.id, params).then(res => {
+              if (res.code == 200) {
+                this.$message.success(res.msg)
+                this.open = false
+                this.getList()
+              }
+              else {
+                this.$message.error(res.msg)
+              }
+            })
+          }
+          else {
+            addPlan(params).then(res => {
+              if (res.code == 200) {
+                this.$message.success(res.msg)
+                this.open = false
+                this.getList()
+              }
+              else {
+                this.$message.error(res.msg)
+              }
+            })
+          }
         }
       })
     },
@@ -390,13 +456,22 @@ export default {
       this.$refs.form.resetFields()
     },
     /** 删除按钮操作 */
-    handleDelete (row) {
+    handleDelete (id) {
+      delPlan(id).then(res => {
+        if (res.code == 200) {
+          this.$message.success(res.msg)
+          this.getList()
+        }
+        else {
+          this.$message.error(res.msg)
+        }
+      })
 
     },
     //点击编号跳转详情页面
     Goto (row) {
       this.$router.push({ path: '/KeWenWMS/WarehouseOperation/countlist', query: { row: row.id } })
-    },
+    }
   }
 };
 </script>
